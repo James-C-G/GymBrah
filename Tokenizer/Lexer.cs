@@ -1,120 +1,133 @@
-﻿using System;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          Lexer.cs, Tokens.cs, Parser.cs, Syntax Tree.cs
+ * Last Modified :  06/10/21
+ * Version :        1.4
+ * Description :    
+ */
+
+
+using System;
 using System.Collections.Generic;
 
 namespace Tokenizer
 {
     public class Lexer
     {
-        public List<Token> Tokens;
+        public List<Token> Tokens { get; }
 
         private Dictionary<String, TokenType> _dict = new KeyWords().Dict;
 
+        private readonly String _inStream;
+        private char _curChar;
+        private int _curPos;
+        private bool _endLine;
+
         public Lexer(String inStream) // Pass input stream/file path
         {
-            /*
-             Go char by char, order of play:
-             skip white spaces other than tabs, 
-             single character tokens,
-             strings (double/single quote),
-             everything else  
-             
-             Whenever hit identifier check if its a key word           
-             */
             Tokens = new List<Token>();
+            _inStream = inStream;
+            _curChar = _inStream[_curPos];
+            
+            _curPos = 0;
+            _endLine = false;
+            
+            _lex();
+        }
 
-            String temp = "";
+        private void _lex()
+        {
+            while (!_endLine)
+            {
+                switch (_curChar)
+                {
+                    case ' ':
+                        _curPos++;
+                        break;
+                    case '?':
+                    case '!':   // Fall-through
+                        Tokens.Add(new Token(TokenType.Question, "?"));
+                        _endLine = true;
+                        break;
+                    case '\"':
+                        //TODO Read string
+                        break;
+                    // TODO EOF case which also ends line
+                    default:
+                        if (_isDigit())
+                        {
+                            _getDigits();
+                        }
+                        else if (_isLetter())
+                        {
+                            _getLetters();
+                        }
+                        else
+                        {
+                            Tokens.Add(new Token(TokenType.Illegal, ""));
+                        }
+                        break;
+                }
+                _curChar = _inStream[_curPos];
+            }
+        }
+
+        private void _getDigits()
+        {
+            String outString = "";
+            
+            outString += _curChar.ToString();
+            _curChar = _inStream[++_curPos];
+                            
+            while (_isDigit())
+            {
+                outString += _curChar.ToString();
+                _curChar = _inStream[++_curPos];
+            }
+
+            Tokens.Add(new Token(TokenType.Int, outString));
+        }
+
+        private void _getLetters()
+        {
+            String outString = "";
             TokenType result;
+            bool isKeyword = false;
+            
+            outString += _curChar.ToString();
+            _curChar = _inStream[++_curPos];
 
-            foreach (char c in inStream)
+            while (_isLetter())
             {
-                if (c == '?' || c == '!')
-                {
-                    Tokens.Add(new Token(TokenType.Question, temp));
-                    temp = "";
-                }
-                else if (Char.IsWhiteSpace(c))
-                {
-                    //TODO Put in optimised order i.e. size order
-                    switch (temp)
-                    {
-                        case "EOF":
-                            Tokens.Add(new Token(TokenType.EoF, ""));
-                            break;
-                        case "can":
-                            Tokens.Add(new Token(TokenType.Can, temp));
-                            break;
-                        case "you":
-                            Tokens.Add(new Token(TokenType.You, temp));
-                            break;
-                        case "bench":
-                            Tokens.Add(new Token(TokenType.Bench, temp));
-                            break;
-                        case "plates":
-                            Tokens.Add(new Token(TokenType.Plates, temp));
-                            break;
-                        default:
-                            if (IsDigit(temp))
-                            {
-                                Tokens.Add(new Token(TokenType.Int, temp));
-                            }
-                            else if (IsString(temp))
-                            {
-                                Tokens.Add(new Token(TokenType.Str, temp));
-                            }
-                            else if (_dict.TryGetValue(temp, out result))
-                            {
-                                Tokens.Add(new Token(result, temp));
-                            }
-                            else if (IsVar(temp))
-                            {
-                                Tokens.Add(new Token(TokenType.Var, temp));
-                            }
-                            else
-                            {
-                                Tokens.Add(new Token(TokenType.Illegal, temp));
-                            }
-                            break;
-                    }
-                    temp = "";
-                }
-                else
-                {
-                    temp += c;
-                }
-            }
-        }
+                outString += _curChar.ToString();
 
-        private static bool IsDigit(String input)
-        {
-            foreach (char c in input)
-            {
-                if ('0' <= c && c <= '9')
+                if (_dict.TryGetValue(outString, out result))
                 {
-                    return true;
+                    Tokens.Add(new Token(result, outString));
+                    outString = "";
+                    isKeyword = true;
+                    _curChar = _inStream[++_curPos];
+                    break;
                 }
+                                
+                _curChar = _inStream[++_curPos];
             }
-            return false;
+            if (!isKeyword)
+            {
+                Tokens.Add(new Token(TokenType.Var, outString));
+            }
         }
         
-        private static bool IsString(String input)
+        private bool _isDigit()
         {
-            if (input[0] == '\"' && input[input.Length] == '\"')
-            {
-                return true;
-            }
-            return false;
+            return '0' <= _curChar && _curChar <= '9';
+        }
+
+        private bool _isLetter()
+        {
+            return 'a' <= _curChar && _curChar <= 'z' || 'A' <= _curChar && _curChar <= 'Z' || _curChar == '_';
         }
         
-        private static bool IsVar(String input)
-        {
-            foreach (char c in input)
-            {
-                if ('a' <= c && c <= 'z' || 'A' <= c && c <= 'Z' || c == '_')
-                {
-                    return true;
-                }
-            }
-            return false;
-        }
+        
     }
 }

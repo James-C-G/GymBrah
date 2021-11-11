@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          Lexer.cs, Tokens.cs, Parser.cs, Syntax Tree.cs
+ * Last Modified :  06/10/21
+ * Version :        1.4
+ * Description :    
+ */
+
+ 
+using System;
 using System.Collections.Generic;
 
 namespace Tokenizer
@@ -24,10 +33,11 @@ namespace Tokenizer
     public class KeyWords
     {
         public Dictionary<String, TokenType> Dict = new Dictionary<String, TokenType>()
-        {
-            //{TokenType.If, "if"}
-            //{TokenType.For, "for"},
-            //{TokenType.While, "while"}
+        {    
+            {"can", TokenType.Can},
+            {"you", TokenType.You},
+            {"bench", TokenType.Bench},
+            {"plates", TokenType.Plates}
         };
     }
 
@@ -44,7 +54,7 @@ namespace Tokenizer
 
         public override string ToString()
         {
-            return this.type.ToString();
+            return type.ToString();
         }
     }
 
@@ -53,8 +63,13 @@ namespace Tokenizer
         static void Main(string[] args)
         {
             // Console.WriteLine("Hello World!");
-            Lexer x = new Lexer("can you bench 2 plates x?");
+
+            Lexer x = new Lexer("can you bench 2 plates x ?");
             x.Tokens.ForEach(Console.WriteLine);
+
+            // Parser x = new Parser("canyou bench 2 plates x ?");
+            // x._tokens.Add(new Token(TokenType.EoF, ""));
+            // Console.Out.WriteLine(x.Parse());
         } 
     }
 }
