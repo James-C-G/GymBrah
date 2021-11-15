@@ -1,6 +1,6 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Lexer.cs, Tokens.cs, Parser.cs, Syntax Tree.cs
+ * Files :          Lexer.cs, Tokens.cs
  * Last Modified :  06/10/21
  * Version :        1.4
  * Description :    
@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Tokenizer
 {
@@ -45,12 +46,42 @@ namespace Tokenizer
                         _curPos++;
                         break;
                     case '?':
-                    case '!':   // Fall-through
-                        Tokens.Add(new Token(TokenType.Question, "?"));
+                    case '!':
+                        Tokens.Add(new Token(TokenType.EoL, ""));
                         _endLine = true;
                         break;
+                    case '\'':
                     case '\"':
-                        //TODO Read string
+                        _getString();
+                        break;
+                    case '*':
+                        Tokens.Add(new Token(TokenType.Multiply, "*"));
+                        _curPos++;
+                        break;
+                    case '+':
+                        Tokens.Add(new Token(TokenType.Addition, "+"));
+                        _curPos++;
+                        break;
+                    case '-':
+                        Token lastToken = Tokens.LastOrDefault();
+                        if (lastToken != null && (lastToken.Type == TokenType.Integer || lastToken.Type == TokenType.Id))
+                        {
+                            Tokens.Add(new Token(TokenType.Subtraction, "-"));
+                        }
+                        else
+                        {
+                            Tokens.Add(new Token(TokenType.Negate, "-"));
+                        }
+                        
+                        _curPos++;
+                        break;
+                    case '(':
+                        Tokens.Add(new Token(TokenType.OpenBrace, "("));
+                        _curPos++;
+                        break;
+                    case ')':
+                        Tokens.Add(new Token(TokenType.CloseBrace, ")"));
+                        _curPos++;
                         break;
                     // TODO EOF case which also ends line
                     default:
@@ -68,7 +99,16 @@ namespace Tokenizer
                         }
                         break;
                 }
-                _curChar = _inStream[_curPos];
+
+                try
+                {
+                    _curChar = _inStream[_curPos];
+                }
+                catch (Exception)
+                {
+                    _endLine = true;
+                }
+                
             }
         }
 
@@ -78,20 +118,22 @@ namespace Tokenizer
             
             outString += _curChar.ToString();
             _curChar = _inStream[++_curPos];
-                            
+
             while (_isDigit())
             {
                 outString += _curChar.ToString();
                 _curChar = _inStream[++_curPos];
             }
 
-            Tokens.Add(new Token(TokenType.Int, outString));
+            Tokens.Add(new Token(TokenType.Integer, int.Parse(outString)));
         }
 
+        /**
+         * Specific for keywords/variables
+         */
         private void _getLetters()
         {
             String outString = "";
-            TokenType result;
             bool isKeyword = false;
             
             outString += _curChar.ToString();
@@ -100,10 +142,32 @@ namespace Tokenizer
             while (_isLetter())
             {
                 outString += _curChar.ToString();
-
-                if (_dict.TryGetValue(outString, out result))
+                
+                if (_dict.TryGetValue(outString, out TokenType result))
                 {
-                    Tokens.Add(new Token(result, outString));
+                    switch (result)
+                    {
+                        case TokenType.Plates:
+                        {
+                            //Tokens.Add(new Token(TokenType.CloseBrace, ")"));
+                            Tokens.Add(new Token(TokenType.Multiply, "*"));
+                            Tokens.Add(new Token(TokenType.Integer, 40));
+                            //Tokens.Add(new Token(TokenType.CloseBrace, ")"));
+                            Tokens.Add(new Token(TokenType.Addition, "+"));
+                            Tokens.Add(new Token(TokenType.Integer, 20));
+                            break;
+                        }
+                        case TokenType.Bench:
+                        {
+                            Tokens.Add(new Token(TokenType.Bench, "int"));
+                            break;
+                        }
+                        default:
+                        {
+                            Tokens.Add(new Token(result, outString));
+                            break;
+                        }
+                    }
                     outString = "";
                     isKeyword = true;
                     _curChar = _inStream[++_curPos];
@@ -112,9 +176,37 @@ namespace Tokenizer
                                 
                 _curChar = _inStream[++_curPos];
             }
-            if (!isKeyword)
+            if (!isKeyword) 
             {
-                Tokens.Add(new Token(TokenType.Var, outString));
+                /* Store identifier name */
+                Tokens.Add(new Token(TokenType.Id, outString));
+            }
+        }
+
+        /**
+         * Specific for strings
+         */
+        private void _getString()
+        {
+            String outString = "";
+
+            outString += _curChar.ToString();
+            _curChar = _inStream[++_curPos];
+
+            while (_isLetter())
+            {
+                outString += _curChar.ToString();
+                _curChar = _inStream[++_curPos]; 
+            }
+
+            if (outString.Substring(0, 1).Equals(_curChar.ToString()))
+            {
+                Tokens.Add(new Token(TokenType.String, outString + _curChar));
+                _curPos++;
+            }
+            else
+            {
+                throw new Exception("String not closed properly.");
             }
         }
         

@@ -1,6 +1,6 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Lexer.cs, Tokens.cs, Parser.cs, Syntax Tree.cs
+ * Files :          Lexer.cs, Tokens.cs
  * Last Modified :  06/10/21
  * Version :        1.4
  * Description :    
@@ -24,10 +24,26 @@ namespace Tokenizer
         
         Bench,      // int
 
-        Question,   // "?" == ";"
-        Can,        // Equals 
-        You,        // Equals
-        Plates     // Integer
+        Question,
+        Can,       
+        You,        
+        Plates,     
+        
+        Root,
+        Term,
+        Expression,
+        Factor,
+        Integer,
+        String,
+        Addition,
+        EoL,
+        Subtraction,
+        OpenBrace,
+        CloseBrace,
+        Multiply,
+        Divide,
+        Negate,
+        Id
     }
 
     public class KeyWords
@@ -43,33 +59,30 @@ namespace Tokenizer
 
     public class Token
     {
-        public TokenType type;
-        public string contents; // int x = 10
+        public TokenType Type;
+        public String StringContent;
+        public int IntegerContent;
 
         public Token(TokenType type, string contents)
         {
-            this.type = type;
-            this.contents = contents;
+            Type = type;
+            StringContent = contents;
+        }
+
+        public Token(TokenType type, int contents)
+        {
+            Type = type;
+            IntegerContent = contents;
         }
 
         public override string ToString()
         {
-            return type.ToString();
+            return Type.ToString();
         }
-    }
 
-    public class Tokenizer
-    {
         static void Main(string[] args)
         {
-            // Console.WriteLine("Hello World!");
-
-            Lexer x = new Lexer("can you bench 2 plates x ?");
-            x.Tokens.ForEach(Console.WriteLine);
-
-            // Parser x = new Parser("canyou bench 2 plates x ?");
-            // x._tokens.Add(new Token(TokenType.EoF, ""));
-            // Console.Out.WriteLine(x.Parse());
-        } 
+            
+        }
     }
 }
