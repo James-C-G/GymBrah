@@ -1,14 +1,15 @@
-﻿namespace Calculator
+﻿using Tokenizer;
+
+namespace Calculator
 {
     public abstract class Node
     {
-        public Token NodeToken;
         public abstract int Evaluate();
     }
     
     public class Integer : Node
     {
-        public new Token NodeToken;
+        public Token NodeToken;
         public Integer(int value)
         {
             NodeToken = new Token(TokenType.Integer, value);
@@ -28,7 +29,7 @@
         }
         public override int Evaluate()
         {
-            return Left.Evaluate() + Right.Evaluate();
+            return Left.Evaluate() +  Right.Evaluate();
         }
 
     }
@@ -42,12 +43,12 @@
         }
         public override int Evaluate()
         {
-            return Left.Evaluate() + Right.Evaluate();
+            return Left.Evaluate() - Right.Evaluate();
         }
     }
     public class Multiply : Node
     {
-        Node Left, Right;
+        public Node Left, Right;
         public Multiply(Node left, Node right)
         {
             Left = left;
@@ -82,7 +83,21 @@
         }
         public override int Evaluate()
         {
-            return -Value.Evaluate();
+            return - Value.Evaluate();
+        }
+    }
+    
+    public class Id : Node
+    {
+        public Token NodeToken;
+        
+        public Id(int value)
+        {
+            NodeToken = new Token(TokenType.Id, value);
+        }
+        public override int Evaluate()
+        {
+            return NodeToken.IntegerContent;
         }
     }
 }

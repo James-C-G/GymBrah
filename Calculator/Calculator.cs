@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tokenizer;
 
 namespace Calculator
 {
@@ -8,6 +9,12 @@ namespace Calculator
         private int _counter;
         private TokenType _currentToken;
         public List<Token> Tokens;
+        
+        // Temporary Variable Table
+        public Dictionary<String, String> VarTable = new Dictionary<String, String>()
+        {    
+            {"x", "1"}
+        };
         
         public Calculator(List<Token> tokens)
         {
@@ -27,9 +34,24 @@ namespace Calculator
         {
             switch (_currentToken)
             {
+                case TokenType.Negate:
+                {
+                    ScanToken(Tokens);
+                    return new Negate(Factor());
+                }
                 case TokenType.Integer:
                 {
                     return new Integer(ScanToken(Tokens).IntegerContent);
+                }
+                case TokenType.Id:
+                {
+                    string varName = ScanToken(Tokens).StringContent;
+                    if (VarTable.TryGetValue(varName, out string result))
+                    {
+                        return new Id(int.Parse(result));
+                    }
+
+                    throw new Exception("ID Error");
                 }
                 case TokenType.OpenBrace:
                 {
@@ -42,11 +64,11 @@ namespace Calculator
                         return node;
                     }
 
-                    return null;
+                    throw new Exception("Bracket Error");
                 }
                 default:
                 {
-                    return null;
+                    throw new Exception("Error"); //TODO Make detailed
                 }
             }
         }
@@ -123,8 +145,8 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Lexer lex = new Lexer("3 * 5 * 3?");
-
+            Lexer lex = new Lexer("(x + 1) plates?");
+            
             Calculator calculator = new Calculator(lex.Tokens);
             Node result = calculator.Expression();
             int e = result.Evaluate();
