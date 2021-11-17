@@ -58,6 +58,10 @@ namespace Tokenizer
                         Tokens.Add(new Token(TokenType.Multiply, "*"));
                         _curPos++;
                         break;
+                    case '/':
+                        Tokens.Add(new Token(TokenType.Divide, "/"));
+                        _curPos++;
+                        break;
                     case '+':
                         Tokens.Add(new Token(TokenType.Addition, "+"));
                         _curPos++;
@@ -72,15 +76,14 @@ namespace Tokenizer
                         {
                             Tokens.Add(new Token(TokenType.Negate, "-"));
                         }
-                        
                         _curPos++;
                         break;
                     case '(':
-                        Tokens.Add(new Token(TokenType.OpenBrace, "("));
+                        Tokens.Add(new Token(TokenType.OpenBracket, "("));
                         _curPos++;
                         break;
                     case ')':
-                        Tokens.Add(new Token(TokenType.CloseBrace, ")"));
+                        Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                         _curPos++;
                         break;
                     // TODO EOF case which also ends line
@@ -96,6 +99,7 @@ namespace Tokenizer
                         else
                         {
                             Tokens.Add(new Token(TokenType.Illegal, ""));
+                            throw new Exception("Illegal token found.");
                         }
                         break;
                 }
@@ -149,17 +153,22 @@ namespace Tokenizer
                     {
                         case TokenType.Plates:
                         {
-                            //Tokens.Add(new Token(TokenType.CloseBrace, ")"));
+                            //Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                             Tokens.Add(new Token(TokenType.Multiply, "*"));
                             Tokens.Add(new Token(TokenType.Integer, 40));
-                            //Tokens.Add(new Token(TokenType.CloseBrace, ")"));
+                            //Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                             Tokens.Add(new Token(TokenType.Addition, "+"));
                             Tokens.Add(new Token(TokenType.Integer, 20));
                             break;
                         }
                         case TokenType.Bench:
                         {
-                            Tokens.Add(new Token(TokenType.Bench, "int"));
+                            Tokens.Add(new Token(TokenType.Bench, "int "));
+                            break;
+                        }
+                        case TokenType.Can:
+                        {
+                            Tokens.Add(new Token(TokenType.Can, " = "));
                             break;
                         }
                         default:
