@@ -25,8 +25,7 @@ namespace Tokenizer
         Bench,      // int
 
         Question,
-        Can,       
-        You,        
+        Can,
         Plates,     
         
         Root,
@@ -38,8 +37,8 @@ namespace Tokenizer
         Addition,
         EoL,
         Subtraction,
-        OpenBrace,
-        CloseBrace,
+        OpenBracket,
+        CloseBracket,
         Multiply,
         Divide,
         Negate,
@@ -51,7 +50,6 @@ namespace Tokenizer
         public Dictionary<String, TokenType> Dict = new Dictionary<String, TokenType>()
         {    
             {"can", TokenType.Can},
-            {"you", TokenType.You},
             {"bench", TokenType.Bench},
             {"plates", TokenType.Plates}
         };

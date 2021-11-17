@@ -1,66 +1,47 @@
 ﻿using System;
 using System.Collections.Generic;
+using Compiler;
 using Tokenizer;
 
 namespace Calculator
 {
-    class Calculator
+    public class Calculator : Parse
     {
-        private int _counter;
-        private TokenType _currentToken;
-        public List<Token> Tokens;
-        
-        // Temporary Variable Table
-        public Dictionary<String, String> VarTable = new Dictionary<String, String>()
-        {    
-            {"x", "1"}
-        };
-        
-        public Calculator(List<Token> tokens)
+        public Calculator(List<Token> tokens) : base(tokens){}
+
+        private CalculatorNode _factor()
         {
-            Tokens = tokens;
-            _currentToken = tokens[_counter].Type;
-        }
-        
-        private Token ScanToken(List<Token> tokens)
-        {
-            Token token = tokens[_counter];  
-            _counter++; 
-            _currentToken = tokens[_counter].Type; 
-            return token;
-        }
-        
-        private Node Factor()
-        {
-            switch (_currentToken)
+            switch (CurrentToken.Type)
             {
                 case TokenType.Negate:
                 {
-                    ScanToken(Tokens);
-                    return new Negate(Factor());
+                    ScanToken();
+                    return new NegateNode(_factor());
                 }
                 case TokenType.Integer:
                 {
-                    return new Integer(ScanToken(Tokens).IntegerContent);
+                    return new IntegerNode(ScanToken().IntegerContent);
                 }
                 case TokenType.Id:
                 {
-                    string varName = ScanToken(Tokens).StringContent;
-                    if (VarTable.TryGetValue(varName, out string result))
+                    string varName = ScanToken().StringContent;
+                    if (true)
                     {
-                        return new Id(int.Parse(result));
+                        //hardcode for now
+                        return new IdNode(5);
                     }
 
                     throw new Exception("ID Error");
                 }
-                case TokenType.OpenBrace:
+                case TokenType.OpenBracket:
                 {
-                    ScanToken(Tokens);
-                    Node node = Expression();
+                    ScanToken();
                     
-                    if(_currentToken == TokenType.CloseBrace)
+                    CalculatorNode node = Expression();
+                    
+                    if(CurrentToken.Type == TokenType.CloseBracket)
                     {
-                        ScanToken(Tokens);
+                        ScanToken();
                         return node;
                     }
 
@@ -73,29 +54,28 @@ namespace Calculator
             }
         }
         
-        private Node Term()
+        private CalculatorNode _term()
         {
-            Node nodeOne = Factor();
+            CalculatorNode nodeOne = _factor();
 
             while (true)
             {
-                switch (_currentToken)
+                switch (CurrentToken.Type)
                 {
                     case TokenType.Multiply:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Factor();
+                        ScanToken();
+                        CalculatorNode nodeTwo = _factor();
                         
-                        nodeOne = new Multiply(nodeOne, nodeTwo);
+                        nodeOne = new MultiplyNode(nodeOne, nodeTwo);
                         break;
                     }
                     case TokenType.Divide:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Factor();
+                        ScanToken();
+                        CalculatorNode nodeTwo = _factor();
                         
-                        nodeOne = new Divide(nodeOne, nodeTwo);
-
+                        nodeOne = new DivideNode(nodeOne, nodeTwo);
                         break;
                     }
                     default:
@@ -106,29 +86,29 @@ namespace Calculator
             }
         }
         
-        public Node Expression()
+        public CalculatorNode Expression()
         {
-            Node nodeOne = Term();
+            CalculatorNode nodeOne = _term();
             
             while (true)
             {
-                switch (_currentToken)
+                switch (CurrentToken.Type)
                 {
                     case TokenType.Addition:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Term();
+                        ScanToken();
+                        CalculatorNode nodeTwo = _term();
                     
-                        nodeOne = new Add(nodeOne, nodeTwo);
+                        nodeOne = new AddNode(nodeOne, nodeTwo);
 
                         break;
                     }
                     case TokenType.Subtraction:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Term();
+                        ScanToken();
+                        CalculatorNode nodeTwo = _term();
                     
-                        nodeOne = new Subtract(nodeOne, nodeTwo);
+                        nodeOne = new SubtractNode(nodeOne, nodeTwo);
 
                         break;
                     }
@@ -145,10 +125,10 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Lexer lex = new Lexer("(x + 1) plates?");
-            
+            Lexer lex = new Lexer("2 plates?");
+
             Calculator calculator = new Calculator(lex.Tokens);
-            Node result = calculator.Expression();
+            CalculatorNode result = calculator.Expression();
             int e = result.Evaluate();
             Console.Out.WriteLine(e);
         }
