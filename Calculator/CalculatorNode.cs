@@ -1,10 +1,11 @@
-﻿using Tokenizer;
+﻿using Compiler;
+using Tokenizer;
 
 namespace Calculator
 {
-    public abstract class CalculatorNode
+    public abstract class CalculatorNode : Node<int>
     {
-        public abstract int Evaluate();
+        public abstract override int Evaluate();
     }
     
     public class IntegerNode : CalculatorNode

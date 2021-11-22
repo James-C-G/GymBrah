@@ -16,33 +16,29 @@ namespace Tokenizer
     public enum TokenType
     {
         Illegal,    // Illegal character
-        EoF,        // End of file
-        
-        Int,        // Integer
-        Str,        // String
-        Var,        // Variable
-        
-        Bench,      // int
+        EoL,
 
-        Question,
-        Can,
-        Plates,     
+        Bench,      // int
+        Can,        // =
+        Plates,     // ( var * 40) + 20 
+        Scream,     // Printf("")
+        
+        OpenBracket,
+        CloseBracket,
+        Id,
         
         Root,
         Term,
         Expression,
         Factor,
+        
         Integer,
         String,
         Addition,
-        EoL,
         Subtraction,
-        OpenBracket,
-        CloseBracket,
         Multiply,
         Divide,
-        Negate,
-        Id
+        Negate
     }
 
     public class KeyWords
@@ -51,7 +47,8 @@ namespace Tokenizer
         {    
             {"can", TokenType.Can},
             {"bench", TokenType.Bench},
-            {"plates", TokenType.Plates}
+            {"plates", TokenType.Plates},
+            {"scream", TokenType.Scream}
         };
     }
 
@@ -80,7 +77,6 @@ namespace Tokenizer
 
         static void Main(string[] args)
         {
-            
         }
     }
 }
