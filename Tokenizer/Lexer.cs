@@ -9,7 +9,9 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 
 namespace Tokenizer
 {
@@ -17,58 +19,76 @@ namespace Tokenizer
     {
         public List<Token> Tokens { get; }
 
-        private Dictionary<String, TokenType> _dict = new KeyWords().Dict;
+        private readonly Dictionary<String, TokenType> _dict = new KeyWords().Dict;
+        
+        private readonly StreamReader _inStream;
+        private int _currentChar;
 
-        private readonly String _inStream;
-        private char _curChar;
-        private int _curPos;
-        private bool _endLine;
-
-        public Lexer(String inStream) // Pass input stream/file path
+        public Lexer(string inStream)
+        {
+            Tokens = new List<Token>();
+            _inStream = new StreamReader(new MemoryStream(Encoding.UTF8.GetBytes(inStream)));
+            _currentChar = _inStream.Read();
+            _lex();
+        }
+        
+        public Lexer(StreamReader inStream)
         {
             Tokens = new List<Token>();
             _inStream = inStream;
-            _curChar = _inStream[_curPos];
-            
-            _curPos = 0;
-            _endLine = false;
-            
+            _currentChar = _inStream.Read();
             _lex();
         }
 
         private void _lex()
         {
-            while (!_endLine)
-            {
-                switch (_curChar)
+           while (_currentChar != -1)
+           {
+               switch ((char)_currentChar)
                 {
+                    case '\n':
+                    case '\r':
                     case ' ':
-                        _curPos++;
+                    {
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case '?':
                     case '!':
-                        Tokens.Add(new Token(TokenType.EoL, ""));
-                        _endLine = true;
+                    {
+                        Tokens.Add(new Token(TokenType.EoL, ";"));
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case '\'':
                     case '\"':
+                    {
                         _getString();
                         break;
+                    }
                     case '*':
+                    {
                         Tokens.Add(new Token(TokenType.Multiply, "*"));
-                        _curPos++;
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case '/':
+                    {
                         Tokens.Add(new Token(TokenType.Divide, "/"));
-                        _curPos++;
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case '+':
+                    {
                         Tokens.Add(new Token(TokenType.Addition, "+"));
-                        _curPos++;
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case '-':
+                    {
                         Token lastToken = Tokens.LastOrDefault();
-                        if (lastToken != null && (lastToken.Type == TokenType.Integer || lastToken.Type == TokenType.Id))
+                        if (lastToken != null &&
+                            (lastToken.Type == TokenType.Integer || lastToken.Type == TokenType.Id))
                         {
                             Tokens.Add(new Token(TokenType.Subtraction, "-"));
                         }
@@ -76,18 +96,24 @@ namespace Tokenizer
                         {
                             Tokens.Add(new Token(TokenType.Negate, "-"));
                         }
-                        _curPos++;
+                        
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case '(':
+                    {
                         Tokens.Add(new Token(TokenType.OpenBracket, "("));
-                        _curPos++;
+                        _currentChar = _inStream.Read();
                         break;
+                    }
                     case ')':
+                    {
                         Tokens.Add(new Token(TokenType.CloseBracket, ")"));
-                        _curPos++;
+                        _currentChar = _inStream.Read();
                         break;
-                    // TODO EOF case which also ends line
+                    }
                     default:
+                    {
                         if (_isDigit())
                         {
                             _getDigits();
@@ -101,32 +127,21 @@ namespace Tokenizer
                             Tokens.Add(new Token(TokenType.Illegal, ""));
                             throw new Exception("Illegal token found.");
                         }
-                        break;
-                }
 
-                try
-                {
-                    _curChar = _inStream[_curPos];
+                        break;
+                    }
                 }
-                catch (Exception)
-                {
-                    _endLine = true;
-                }
-                
-            }
+           } 
         }
 
         private void _getDigits()
         {
             String outString = "";
             
-            outString += _curChar.ToString();
-            _curChar = _inStream[++_curPos];
-
             while (_isDigit())
             {
-                outString += _curChar.ToString();
-                _curChar = _inStream[++_curPos];
+                outString += (char)_currentChar;
+                _currentChar = _inStream.Read();
             }
 
             Tokens.Add(new Token(TokenType.Integer, int.Parse(outString)));
@@ -138,25 +153,21 @@ namespace Tokenizer
         private void _getLetters()
         {
             String outString = "";
-            bool isKeyword = false;
-            
-            outString += _curChar.ToString();
-            _curChar = _inStream[++_curPos];
 
             while (_isLetter())
             {
-                outString += _curChar.ToString();
+                outString += (char)_currentChar;
                 
                 if (_dict.TryGetValue(outString, out TokenType result))
                 {
                     switch (result)
                     {
-                        case TokenType.Plates:
+                        case TokenType.Plates: // TODO Add singular plate?
                         {
-                            //Tokens.Add(new Token(TokenType.CloseBracket, ")"));
+                            Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                             Tokens.Add(new Token(TokenType.Multiply, "*"));
                             Tokens.Add(new Token(TokenType.Integer, 40));
-                            //Tokens.Add(new Token(TokenType.CloseBracket, ")"));
+                            // Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                             Tokens.Add(new Token(TokenType.Addition, "+"));
                             Tokens.Add(new Token(TokenType.Integer, 20));
                             break;
@@ -171,6 +182,11 @@ namespace Tokenizer
                             Tokens.Add(new Token(TokenType.Can, " = "));
                             break;
                         }
+                        case TokenType.Scream:
+                        {
+                            Tokens.Add(new Token(TokenType.Scream, "printf("));
+                            break;
+                        }
                         default:
                         {
                             Tokens.Add(new Token(result, outString));
@@ -178,14 +194,10 @@ namespace Tokenizer
                         }
                     }
                     outString = "";
-                    isKeyword = true;
-                    _curChar = _inStream[++_curPos];
-                    break;
                 }
-                                
-                _curChar = _inStream[++_curPos];
+                _currentChar = _inStream.Read();
             }
-            if (!isKeyword) 
+            if (outString != "") 
             {
                 /* Store identifier name */
                 Tokens.Add(new Token(TokenType.Id, outString));
@@ -199,19 +211,33 @@ namespace Tokenizer
         {
             String outString = "";
 
-            outString += _curChar.ToString();
-            _curChar = _inStream[++_curPos];
-
+            // Get \" or \'
+            outString += (char)_currentChar;
+            char start = (char)_currentChar;
+            
+            _currentChar = _inStream.Read();
+            
             while (_isLetter())
             {
-                outString += _curChar.ToString();
-                _curChar = _inStream[++_curPos]; 
+                outString += (char)_currentChar;
+                _currentChar = _inStream.Read();
+
+                switch ((char) _currentChar) //TODO Handle escapable characters e.g. the ' in "Isn't"
+                {
+                    case ' ':
+                    {
+                        outString += (char) _currentChar;
+                        _currentChar = _inStream.Read();
+                        break;
+                    }
+                }
             }
 
-            if (outString.Substring(0, 1).Equals(_curChar.ToString()))
+            // Ensure the correct string quote is used
+            if ((char)_currentChar == start)
             {
-                Tokens.Add(new Token(TokenType.String, outString + _curChar));
-                _curPos++;
+                Tokens.Add(new Token(TokenType.String, outString + (char)_currentChar));
+                _currentChar = _inStream.Read();
             }
             else
             {
@@ -221,12 +247,14 @@ namespace Tokenizer
         
         private bool _isDigit()
         {
-            return '0' <= _curChar && _curChar <= '9';
+            return '0' <= (char)_currentChar && (char)_currentChar <= '9';
         }
 
         private bool _isLetter()
         {
-            return 'a' <= _curChar && _curChar <= 'z' || 'A' <= _curChar && _curChar <= 'Z' || _curChar == '_';
+            return 'a' <= (char)_currentChar && (char)_currentChar <= 'z' || 
+                   'A' <= (char)_currentChar && (char)_currentChar <= 'Z' || 
+                   (char)_currentChar == '_';
         }
         
         

@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using Tokenizer;
 
 namespace Compiler
 {
-    public static class Table
+    public class Table
     {
-        public static Dictionary<String, Value> VariableTable = new Dictionary<String, Value>();
+        public Dictionary<String, Value> VariableTable = new Dictionary<String, Value>();
     }
     
     public enum ValueType
