@@ -2,21 +2,23 @@
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
+using ValueType = Compiler.ValueType;
 
 namespace Calculator
 {
-    public class Calculator : Parse
+    public class Calculator : Parse<int>
     {
-        public Calculator(List<Token> tokens) : base(tokens){}
+        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
+        {}
 
-        private CalculatorNode _factor()
+        private CalculatorNode _parseFactor()
         {
             switch (CurrentToken.Type)
             {
                 case TokenType.Negate:
                 {
                     ScanToken();
-                    return new NegateNode(_factor());
+                    return new NegateNode(_parseFactor());
                 }
                 case TokenType.Integer:
                 {
@@ -24,20 +26,25 @@ namespace Calculator
                 }
                 case TokenType.Id:
                 {
-                    string varName = ScanToken().StringContent;
-                    if (true)
+                    if (VariableTable.TryGetValue(ScanToken().StringContent, out Value result))
                     {
-                        //hardcode for now
-                        return new IdNode(5);
+                        // TODO Remove?
+                        if (result.Type == ValueType.Integer)
+                        {
+                            // Check that variable exists and is of the right type
+                            return new IdNode(((IntegerValue)result).Content);
+                        }
+
+                        throw new Exception("Variable not an integer.");
                     }
 
-                    throw new Exception("ID Error");
+                    throw new Exception("Variable not defined.");
                 }
-                case TokenType.OpenBracket:
+                case TokenType.OpenBracket: //TODO Doesn't handle close bracket errors
                 {
                     ScanToken();
                     
-                    CalculatorNode node = Expression();
+                    CalculatorNode node = ParseTree();
                     
                     if(CurrentToken.Type == TokenType.CloseBracket)
                     {
@@ -54,9 +61,9 @@ namespace Calculator
             }
         }
         
-        private CalculatorNode _term()
+        private CalculatorNode _parseTerm()
         {
-            CalculatorNode nodeOne = _factor();
+            CalculatorNode nodeOne = _parseFactor();
 
             while (true)
             {
@@ -65,7 +72,7 @@ namespace Calculator
                     case TokenType.Multiply:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _factor();
+                        CalculatorNode nodeTwo = _parseFactor();
                         
                         nodeOne = new MultiplyNode(nodeOne, nodeTwo);
                         break;
@@ -73,7 +80,7 @@ namespace Calculator
                     case TokenType.Divide:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _factor();
+                        CalculatorNode nodeTwo = _parseFactor();
                         
                         nodeOne = new DivideNode(nodeOne, nodeTwo);
                         break;
@@ -86,9 +93,9 @@ namespace Calculator
             }
         }
         
-        public CalculatorNode Expression()
+        public override CalculatorNode ParseTree()
         {
-            CalculatorNode nodeOne = _term();
+            CalculatorNode nodeOne = _parseTerm();
             
             while (true)
             {
@@ -97,7 +104,7 @@ namespace Calculator
                     case TokenType.Addition:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _term();
+                        CalculatorNode nodeTwo = _parseTerm();
                     
                         nodeOne = new AddNode(nodeOne, nodeTwo);
 
@@ -106,7 +113,7 @@ namespace Calculator
                     case TokenType.Subtraction:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _term();
+                        CalculatorNode nodeTwo = _parseTerm();
                     
                         nodeOne = new SubtractNode(nodeOne, nodeTwo);
 
@@ -125,10 +132,12 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Lexer lex = new Lexer("2 plates?");
-
-            Calculator calculator = new Calculator(lex.Tokens);
-            CalculatorNode result = calculator.Expression();
+            Lexer lex = new Lexer("x 3?");
+            Dictionary<String, Value> var = new Dictionary<String, Value>();
+            var.Add("x", new IntegerValue(10));
+            
+            Calculator calculator = new Calculator(lex.Tokens, ref var);
+            CalculatorNode result = calculator.ParseTree();
             int e = result.Evaluate();
             Console.Out.WriteLine(e);
         }

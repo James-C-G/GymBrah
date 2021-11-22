@@ -4,17 +4,23 @@ using Tokenizer;
 
 namespace Compiler
 {
-    public class Parse
+    public abstract class Parse<T>
     {
         private int _counter;
         protected Token CurrentToken;
         private readonly List<Token> _tokens;
+        protected Dictionary<String, Value> VariableTable;
         
-        protected Parse(List<Token> tokens)
+        protected Parse(List<Token> tokens, ref Dictionary<String, Value> variableTable)
         {
             _tokens = tokens;
             CurrentToken = tokens[_counter];
+            VariableTable = variableTable;
         }
+
+        public abstract Node<T> ParseTree();
+
+        protected List<Token> GetTokens() { return _tokens; }
         
         protected List<Token> GetRemainingTokens()
         {

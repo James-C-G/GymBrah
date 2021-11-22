@@ -1,10 +1,11 @@
-﻿using Tokenizer;
+﻿using Compiler;
+using Tokenizer;
 
 namespace Assignment
 {
-    public abstract class AssignmentNode
+    public abstract class AssignmentNode : Node<string>
     {
-        public abstract string Evaluate();
+        public abstract override string Evaluate();
     }
     
     public class EqualNode : AssignmentNode
@@ -25,21 +26,6 @@ namespace Assignment
             return _left.Evaluate() + _nodeToken.StringContent + _right.Evaluate();
         }
     }
-    
-    public class TypeIntegerNode : AssignmentNode
-    {
-        private readonly Token _nodeToken;
-            
-        public TypeIntegerNode(Token token)
-        {
-            _nodeToken = token;
-        }
-        
-        public override string Evaluate()
-        {
-            return _nodeToken.StringContent;
-        }
-    }
 
     public class AssignmentVariableNode : AssignmentNode
     {
@@ -58,6 +44,23 @@ namespace Assignment
         }
     }
     
+    public class VariableNode : AssignmentNode
+    {
+        private readonly Token _nodeToken;
+        private readonly AssignmentNode _right;
+
+        public VariableNode(Token token, AssignmentNode right)
+        {
+            _nodeToken = token;
+            _right = right;
+        }
+        
+        public override string Evaluate()
+        {
+            return _nodeToken.StringContent + _right.Evaluate();
+        }
+    }
+    
     public class TerminalNode : AssignmentNode
     {
         private readonly Token _nodeToken;
@@ -70,55 +73,6 @@ namespace Assignment
         public override string Evaluate()
         {
             return _nodeToken.StringContent;
-        }
-    }
-    
-    public class EVarNode : AssignmentNode
-    {
-        private Token NodeToken;
-        private AssignmentNode Right;
-
-        public EVarNode(Token token, AssignmentNode right)
-        {
-            NodeToken = token;
-            Right = right;
-        }
-        
-        public override string Evaluate()
-        {
-            return NodeToken.StringContent + Right.Evaluate();
-        }
-    }
-    
-    public class AVarNode : AssignmentNode
-    {
-        private Token NodeToken;
-        private AssignmentNode Left;
-
-        public AVarNode(Token token, AssignmentNode left)
-        {
-            NodeToken = token;
-            Left = left;
-        }
-        
-        public override string Evaluate()
-        {
-            return Left.Evaluate() + NodeToken.StringContent;
-        }
-    }
-    
-    public class NVarNode : AssignmentNode
-    {
-        private Token NodeToken;
-
-        public NVarNode(Token token)
-        {
-            NodeToken = token;
-        }
-        
-        public override string Evaluate()
-        {
-            return NodeToken.StringContent;
         }
     }
 }
