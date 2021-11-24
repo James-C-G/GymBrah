@@ -22,9 +22,14 @@ namespace Assignment
                     _assignmentType = TokenType.Integer;
                     return new TerminalNode(ScanToken());
                 }
+                case TokenType.Squat:
+                {
+                    _assignmentType = TokenType.String;
+                    return new TerminalNode(ScanToken());
+                }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised assignment type " + CurrentToken.Type);
                 }
             }
         }
@@ -48,24 +53,23 @@ namespace Assignment
                         }
                         else
                         {
-                            throw new Exception("Variable not assigned.");
+                            throw new Exception("Undefined variables cannot be assigned.");
                         }
                     }
                     else if (VariableTable.TryGetValue(_variableName, out Value result)) // Can x bench y?
                     {
                         if (result.Type.ToString() != _assignmentType.ToString())
                         {
-                            throw new Exception("Not the same type.");
+                            throw new Exception("Variable being assigned is already defined and not of the correct type.");
                         }
                     }
-                   
                     
                     if (nodeOne == null) return new TerminalNode(start);
                     return new AssignmentVariableNode(start, nodeOne);
                 }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised token in assignment " + CurrentToken.Type);
                 }
             }
         }
@@ -80,7 +84,7 @@ namespace Assignment
                     {
                         if ((TokenType) result.Type != _assignmentType)
                         {
-                            throw new Exception("Not of same type.");
+                            throw new Exception("Variables are not of the same type.");
                         }
                         if (result.Type == ValueType.Integer)
                         {
@@ -91,10 +95,10 @@ namespace Assignment
                             goto case TokenType.String;
                         }
 
-                        throw new Exception("Not valid type.");
+                        throw new Exception("Variable being assigned is not a valid type.");
                     }
                     
-                    throw new Exception("Variable not defined.");
+                    throw new Exception("Variable being assigned is not defined.");
                 }
                 case TokenType.Integer:
                 {
@@ -106,6 +110,7 @@ namespace Assignment
                     calcTokens.Insert(calcTokens.Count - 1, new Token(TokenType.CloseBracket, ")"));
 
                     string calculation = new Calculator.Calculator(calcTokens, ref VariableTable).ParseTree().Evaluate().ToString();
+                    
                     if (!VariableTable.TryAdd(_variableName, new IntegerValue(Int32.Parse(calculation))))
                         VariableTable[_variableName] = new IntegerValue(Int32.Parse(calculation));
                         
@@ -113,15 +118,29 @@ namespace Assignment
                         new TerminalNode(new Token(TokenType.EoL, ";")));
                 }
                 case TokenType.String:
+                {
+                    Token returnToken = CurrentToken;
+
+                    if (CurrentToken.Type == TokenType.Id)
+                    {
+                        VariableTable.TryGetValue(CurrentToken.StringContent, out Value result);
+                        returnToken = new Token(TokenType.String, ((StringValue) result).Content);
+                    }
+                    
+                    if (!VariableTable.TryAdd(_variableName, new StringValue(returnToken.StringContent)))
+                        VariableTable[_variableName] = new StringValue(returnToken.StringContent);
+
+                    return new VariableNode(returnToken, new TerminalNode(new Token(TokenType.EoL, ";")));
+                }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised token in assignment " + CurrentToken.Type);
                 }
             }
             
         }
         
-        public override Node<string> ParseTree()
+        public override AssignmentNode ParseTree()
         {
             switch (CurrentToken.Type)
             {
@@ -132,7 +151,7 @@ namespace Assignment
                 }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised token in assignment " + CurrentToken.Type);
                 }
             }
         }
@@ -141,8 +160,10 @@ namespace Assignment
         public static void Main()
         {
             Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("y", new IntegerValue(2));
-            Lexer lexer = new Lexer("can x bench 2 3?");
+            var.Add("x", new StringValue("this"));
+            var.Add("y", new StringValue("\"this\""));
+            
+            Lexer lexer = new Lexer("can x squat y?");
             Assignment x = new Assignment(lexer.Tokens, ref var);
             Console.Out.WriteLine(x.ParseTree().Evaluate());
             
