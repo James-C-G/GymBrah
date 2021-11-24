@@ -27,6 +27,12 @@ namespace Assignment
                     _assignmentType = TokenType.String;
                     return new TerminalNode(ScanToken());
                 }
+                case TokenType.Integer:
+                case TokenType.String:
+                case TokenType.Id:  // can x y?
+                {
+                    return null;
+                }
                 default:
                 {
                     throw new Exception("Unrecognised assignment type " + CurrentToken.Content);
@@ -141,7 +147,6 @@ namespace Assignment
         }
         
         public override Node ParseTree()
-
         {
             switch (CurrentToken.Type)
             {
@@ -163,9 +168,8 @@ namespace Assignment
             Dictionary<String, Value> var = new Dictionary<String, Value>();
             var.Add("x", new StringValue("this"));
             var.Add("y", new StringValue("\"this\""));
-
-            Lexer lexer = new Lexer("can x y?");
-
+            
+            Lexer lexer = new Lexer("can x \"4\"?");
             Assignment x = new Assignment(lexer.Tokens, ref var);
             Console.Out.WriteLine(x.ParseTree().Evaluate());
             
