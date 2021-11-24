@@ -28,17 +28,16 @@ namespace Calculator
                 {
                     if (VariableTable.TryGetValue(ScanToken().StringContent, out Value result))
                     {
-                        // TODO Remove?
                         if (result.Type == ValueType.Integer)
                         {
                             // Check that variable exists and is of the right type
                             return new IdNode(((IntegerValue)result).Content);
                         }
 
-                        throw new Exception("Variable not an integer.");
+                        throw new Exception("Variable is not an integer.");
                     }
 
-                    throw new Exception("Variable not defined.");
+                    throw new Exception("Variable is not defined.");
                 }
                 case TokenType.OpenBracket: //TODO Doesn't handle close bracket errors
                 {
@@ -52,11 +51,11 @@ namespace Calculator
                         return node;
                     }
 
-                    throw new Exception("Bracket Error");
+                    throw new Exception("Bracket not closed properly.");
                 }
                 default:
                 {
-                    throw new Exception("Error"); //TODO Make detailed
+                    throw new Exception("Invalid token in calculation."); //TODO Make detailed
                 }
             }
         }

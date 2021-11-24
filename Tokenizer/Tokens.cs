@@ -19,21 +19,26 @@ namespace Tokenizer
         EoL,
 
         Bench,      // int
+        Squat,      // string
         Can,        // =
         Plates,     // ( var * 40) + 20 
         Scream,     // Printf("")
+        Is,         // If
+        DropSet,    // While
         
         OpenBracket,
         CloseBracket,
+        LightWeight,    // {
+        Baby,           // }
         Id,
-        
-        Root,
-        Term,
-        Expression,
-        Factor,
-        
+
         Integer,
         String,
+        Equals,
+        LessThan,       // <
+        GreaterThan,    // >
+        Not,            // !
+        
         Addition,
         Subtraction,
         Multiply,
@@ -47,8 +52,13 @@ namespace Tokenizer
         {    
             {"can", TokenType.Can},
             {"bench", TokenType.Bench},
+            {"squat", TokenType.Squat},
             {"plates", TokenType.Plates},
-            {"scream", TokenType.Scream}
+            {"scream", TokenType.Scream},
+            {"lightweight", TokenType.LightWeight},
+            {"baby", TokenType.Baby},
+            {"is", TokenType.Is},
+            {"dropset", TokenType.DropSet}
         };
     }
 
@@ -57,6 +67,7 @@ namespace Tokenizer
         public TokenType Type;
         public String StringContent;
         public int IntegerContent;
+        public string Content;
 
         public Token(TokenType type, string contents)
         {
