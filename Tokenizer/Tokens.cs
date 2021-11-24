@@ -65,8 +65,6 @@ namespace Tokenizer
     public class Token
     {
         public TokenType Type;
-        // public String StringContent;
-        // public int IntegerContent;
         public string Content;
 
         public Token(TokenType type, string contents)
