@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\Calculator\Calculator.csproj" />
       <ProjectReference Include="..\Compiler\Compiler.csproj" />
       <ProjectReference Include="..\Tokenizer\Tokenizer.csproj" />
     </ItemGroup>

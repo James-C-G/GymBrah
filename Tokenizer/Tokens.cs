@@ -16,34 +16,34 @@ namespace Tokenizer
     public enum TokenType
     {
         Illegal,    // Illegal character
-        EoF,        // End of file
-        
-        Int,        // Integer
-        Str,        // String
-        Var,        // Variable
-        
-        Bench,      // int
+        EoL,
 
-        Question,
-        Can,       
-        You,        
-        Plates,     
+        Bench,      // int
+        Squat,      // string
+        Can,        // =
+        Plates,     // ( var * 40) + 20 
+        Scream,     // Printf("")
+        Is,         // If
+        DropSet,    // While
         
-        Root,
-        Term,
-        Expression,
-        Factor,
+        OpenBracket,
+        CloseBracket,
+        LightWeight,    // {
+        Baby,           // }
+        Id,
+
         Integer,
         String,
+        Equals,
+        LessThan,       // <
+        GreaterThan,    // >
+        Not,            // !
+        
         Addition,
-        EoL,
         Subtraction,
-        OpenBrace,
-        CloseBrace,
         Multiply,
         Divide,
-        Negate,
-        Id
+        Negate
     }
 
     public class KeyWords
@@ -51,29 +51,34 @@ namespace Tokenizer
         public Dictionary<String, TokenType> Dict = new Dictionary<String, TokenType>()
         {    
             {"can", TokenType.Can},
-            {"you", TokenType.You},
             {"bench", TokenType.Bench},
-            {"plates", TokenType.Plates}
+            {"squat", TokenType.Squat},
+            {"plates", TokenType.Plates},
+            {"scream", TokenType.Scream},
+            {"lightweight", TokenType.LightWeight},
+            {"baby", TokenType.Baby},
+            {"is", TokenType.Is},
+            {"dropset", TokenType.DropSet}
         };
     }
 
     public class Token
     {
         public TokenType Type;
-        public String StringContent;
-        public int IntegerContent;
+        public string Content;
 
         public Token(TokenType type, string contents)
         {
             Type = type;
-            StringContent = contents;
+            // StringContent = contents;
+            Content = contents;
         }
 
-        public Token(TokenType type, int contents)
-        {
-            Type = type;
-            IntegerContent = contents;
-        }
+        // public Token(TokenType type, int contents)
+        // {
+        //     Type = type;
+        //     IntegerContent = contents;
+        // }
 
         public override string ToString()
         {
@@ -82,7 +87,6 @@ namespace Tokenizer
 
         static void Main(string[] args)
         {
-            
         }
     }
 }

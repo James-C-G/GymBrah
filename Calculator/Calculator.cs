@@ -1,101 +1,95 @@
 ﻿using System;
 using System.Collections.Generic;
+using Compiler;
 using Tokenizer;
+using ValueType = Compiler.ValueType;
 
 namespace Calculator
 {
-    class Calculator
+    public class Calculator : Parse
     {
-        private int _counter;
-        private TokenType _currentToken;
-        public List<Token> Tokens;
-        
-        // Temporary Variable Table
-        public Dictionary<String, String> VarTable = new Dictionary<String, String>()
-        {    
-            {"x", "1"}
-        };
-        
-        public Calculator(List<Token> tokens)
+        private readonly bool _parseMaths;
+
+        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool parseMaths = true) : 
+            base(tokens, ref variableTable)
         {
-            Tokens = tokens;
-            _currentToken = tokens[_counter].Type;
+            _parseMaths = parseMaths;
         }
-        
-        private Token ScanToken(List<Token> tokens)
+
+        private Node _parseFactor()
         {
-            Token token = tokens[_counter];  
-            _counter++; 
-            _currentToken = tokens[_counter].Type; 
-            return token;
-        }
-        
-        private Node Factor()
-        {
-            switch (_currentToken)
+            switch (CurrentToken.Type)
             {
                 case TokenType.Negate:
                 {
-                    ScanToken(Tokens);
-                    return new Negate(Factor());
+                    ScanToken();
+                    if (_parseMaths) return new NegateNode(_parseFactor());
+                    return new NegateNodeString(_parseFactor());
                 }
                 case TokenType.Integer:
                 {
-                    return new Integer(ScanToken(Tokens).IntegerContent);
+                    return new TerminalNode(ScanToken());
                 }
                 case TokenType.Id:
                 {
-                    string varName = ScanToken(Tokens).StringContent;
-                    if (VarTable.TryGetValue(varName, out string result))
+                    Token idToken = ScanToken();
+                    if (VariableTable.TryGetValue(idToken.Content, out Value result))
                     {
-                        return new Id(int.Parse(result));
+                        if (result.Type == ValueType.Integer)
+                        {
+                            // Check that variable exists and is of the right type
+                            if (_parseMaths) return new TerminalNode(new Token(TokenType.Id, ((IntegerValue)result).Content));
+                            return new TerminalNode(idToken);
+                        }
+
+                        throw new Exception("Variable is not an integer.");
                     }
 
-                    throw new Exception("ID Error");
+                    throw new Exception("Variable is not defined.");
                 }
-                case TokenType.OpenBrace:
+                case TokenType.OpenBracket: //TODO Doesn't handle close bracket errors
                 {
-                    ScanToken(Tokens);
-                    Node node = Expression();
+                    ScanToken();
                     
-                    if(_currentToken == TokenType.CloseBrace)
+                    Node node = ParseTree();
+                    
+                    if(CurrentToken.Type == TokenType.CloseBracket)
                     {
-                        ScanToken(Tokens);
-                        return node;
+                        ScanToken();
+                        return _parseMaths ? node : new BracketNodeString(node);
                     }
 
-                    throw new Exception("Bracket Error");
+                    throw new Exception("Bracket not closed properly.");
                 }
                 default:
                 {
-                    throw new Exception("Error"); //TODO Make detailed
+                    throw new Exception("Invalid token in calculation " + CurrentToken.Content); 
                 }
             }
         }
         
-        private Node Term()
+        private Node _parseTerm()
         {
-            Node nodeOne = Factor();
+            Node nodeOne = _parseFactor();
 
             while (true)
             {
-                switch (_currentToken)
+                switch (CurrentToken.Type)
                 {
                     case TokenType.Multiply:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Factor();
+                        ScanToken();
+                        Node nodeTwo = _parseFactor();
                         
-                        nodeOne = new Multiply(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new MultiplyNode(nodeOne, nodeTwo) : new MultiplyNodeString(nodeOne, nodeTwo);
                         break;
                     }
                     case TokenType.Divide:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Factor();
+                        ScanToken();
+                        Node nodeTwo = _parseFactor();
                         
-                        nodeOne = new Divide(nodeOne, nodeTwo);
-
+                        nodeOne = _parseMaths ? new DivideNode(nodeOne, nodeTwo) : new DivideNodeString(nodeOne, nodeTwo);
                         break;
                     }
                     default:
@@ -106,29 +100,29 @@ namespace Calculator
             }
         }
         
-        public Node Expression()
+        public override Node ParseTree()
         {
-            Node nodeOne = Term();
+            Node nodeOne = _parseTerm();
             
             while (true)
             {
-                switch (_currentToken)
+                switch (CurrentToken.Type)
                 {
                     case TokenType.Addition:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Term();
+                        ScanToken();
+                        Node nodeTwo = _parseTerm();
                     
-                        nodeOne = new Add(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new AddNode(nodeOne, nodeTwo) : new AddNodeString(nodeOne, nodeTwo);
 
                         break;
                     }
                     case TokenType.Subtraction:
                     {
-                        ScanToken(Tokens);
-                        Node nodeTwo = Term();
+                        ScanToken();
+                        Node nodeTwo = _parseTerm();
                     
-                        nodeOne = new Subtract(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new SubtractNode(nodeOne, nodeTwo) : new SubtractNodeString(nodeOne, nodeTwo);
 
                         break;
                     }
@@ -145,11 +139,13 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Lexer lex = new Lexer("(x + 1) plates?");
+            Lexer lex = new Lexer("(x * 3 + 4) / 2?");
+            Dictionary<String, Value> var = new Dictionary<String, Value>();
+            var.Add("x", new IntegerValue("10"));
             
-            Calculator calculator = new Calculator(lex.Tokens);
-            Node result = calculator.Expression();
-            int e = result.Evaluate();
+            Calculator calculator = new Calculator(lex.Tokens, ref var);
+            Node result = calculator.ParseTree();
+            string e = result.Evaluate();
             Console.Out.WriteLine(e);
         }
     }
