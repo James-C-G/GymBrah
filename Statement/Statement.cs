@@ -6,12 +6,12 @@ using ValueType = Compiler.ValueType;
 
 namespace Statement
 {
-    public class Statement : Parse<string>
+    public class Statement : Parse
     {
         public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
         {}
 
-        private StatementNode _parseB()
+        private Node _parseB()
         {
             switch (CurrentToken.Type)
             {
@@ -22,19 +22,19 @@ namespace Statement
                 case TokenType.EoL:
                 {
                     // TODO Might be messy for when other statements are added
-                    CurrentToken.StringContent = ")" + CurrentToken.StringContent;
+                    CurrentToken.Content = ")" + CurrentToken.Content;
                     return new TerminalNode(CurrentToken);
                 }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised statement token " + CurrentToken.Type);
                 }
             }
         }
 
-        public override StatementNode ParseTree()
+        public override Node ParseTree()
         {
-            StatementNode nodeOne = _parseB();
+            Node nodeOne = _parseB();
             Token curToken = CurrentToken;
             ScanToken();
             
@@ -46,12 +46,12 @@ namespace Statement
                 }
                 case TokenType.Integer:
                 {
-                    curToken = new Token(TokenType.String, "\"" + curToken.IntegerContent + "\"");
+                    curToken = new Token(TokenType.String, "\"" + curToken.Content + "\"");
                     return new ScreamContentNode(nodeOne, _parseB(), curToken);
                 }
                 case TokenType.Id:
                 {
-                    if (VariableTable.TryGetValue(curToken.StringContent, out Value result))
+                    if (VariableTable.TryGetValue(curToken.Content, out Value result))
                     {
                         switch(result.Type)
                         {
@@ -68,18 +68,18 @@ namespace Statement
                             case ValueType.Bool: // TODO Handle this
                             default:
                             {
-                                throw new Exception("Can't print given value.");
+                                throw new Exception("Can't print value of type " + CurrentToken.Type);
                             }
                         }
                         
                         return new ScreamContentNode(nodeOne, _parseB(), curToken);
                     }
 
-                    throw new Exception("ID not found");
+                    throw new Exception("Variable is not defined.");
                 }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised variable token in statement " + CurrentToken.Type);;
                 }
             }
         }
@@ -89,7 +89,7 @@ namespace Statement
             Lexer lexer = new Lexer("scream y!");
             Dictionary<String, Value> var = new Dictionary<String, Value>();
             var.Add("x", new StringValue("\"output\""));
-            var.Add("y", new IntegerValue(10));
+            var.Add("y", new IntegerValue("10"));
             
             Statement x = new Statement(lexer.Tokens, ref var);
             Console.Out.WriteLine(x.ParseTree().Evaluate());

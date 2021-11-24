@@ -11,8 +11,8 @@ namespace Compiler
     
     public enum ValueType
     {
-        Integer,
-        String,
+        Integer = TokenType.Integer,
+        String = TokenType.String,
         Bool
     }
     public abstract class Value
@@ -27,9 +27,9 @@ namespace Compiler
 
     public class IntegerValue : Value
     {
-        public int Content;
+        public string Content;
 
-        public IntegerValue(int content) : base(ValueType.Integer)
+        public IntegerValue(string content) : base(ValueType.Integer)
         {
             Content = content;
         }
@@ -46,7 +46,8 @@ namespace Compiler
         
         static void Main()
         {
-    
+            ValueType x = ValueType.Integer;
+            Console.Out.WriteLine((TokenType)x);
         }
     }
 }

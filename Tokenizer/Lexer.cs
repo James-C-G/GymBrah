@@ -54,7 +54,7 @@ namespace Tokenizer
                         break;
                     }
                     case '?':
-                    case '!':
+                    //case '!':
                     {
                         Tokens.Add(new Token(TokenType.EoL, ";"));
                         _currentChar = _inStream.Read();
@@ -64,6 +64,30 @@ namespace Tokenizer
                     case '\"':
                     {
                         _getString();
+                        break;
+                    }
+                    case '!':
+                    {
+                        Tokens.Add(new Token(TokenType.Not, "!"));
+                        _currentChar = _inStream.Read();
+                        break; 
+                    }
+                    case '=':
+                    {
+                        Tokens.Add(new Token(TokenType.Equals, "="));
+                        _currentChar = _inStream.Read();
+                        break;
+                    }
+                    case '<':
+                    {
+                        Tokens.Add(new Token(TokenType.LessThan, "<"));
+                        _currentChar = _inStream.Read();
+                        break;
+                    }
+                    case '>':
+                    {
+                        Tokens.Add(new Token(TokenType.GreaterThan, ">"));
+                        _currentChar = _inStream.Read();
                         break;
                     }
                     case '*':
@@ -124,8 +148,8 @@ namespace Tokenizer
                         }
                         else
                         {
-                            Tokens.Add(new Token(TokenType.Illegal, ""));
-                            throw new Exception("Illegal token found.");
+                            Tokens.Add(new Token(TokenType.Illegal, "" + (char)_currentChar));
+                            throw new Exception("Illegal token found \"" + (char)_currentChar + "\"");
                         }
 
                         break;
@@ -144,7 +168,7 @@ namespace Tokenizer
                 _currentChar = _inStream.Read();
             }
 
-            Tokens.Add(new Token(TokenType.Integer, int.Parse(outString)));
+            Tokens.Add(new Token(TokenType.Integer, outString));
         }
 
         /**
@@ -166,15 +190,20 @@ namespace Tokenizer
                         {
                             Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                             Tokens.Add(new Token(TokenType.Multiply, "*"));
-                            Tokens.Add(new Token(TokenType.Integer, 40));
+                            Tokens.Add(new Token(TokenType.Integer, "40"));
                             // Tokens.Add(new Token(TokenType.CloseBracket, ")"));
                             Tokens.Add(new Token(TokenType.Addition, "+"));
-                            Tokens.Add(new Token(TokenType.Integer, 20));
+                            Tokens.Add(new Token(TokenType.Integer, "20"));
                             break;
                         }
                         case TokenType.Bench:
                         {
                             Tokens.Add(new Token(TokenType.Bench, "int "));
+                            break;
+                        }
+                        case TokenType.Squat:
+                        {
+                            Tokens.Add(new Token(TokenType.Squat, "char* "));
                             break;
                         }
                         case TokenType.Can:
@@ -186,6 +215,16 @@ namespace Tokenizer
                         {
                             Tokens.Add(new Token(TokenType.Scream, "printf("));
                             break;
+                        }
+                        case TokenType.Is:
+                        {
+                            Tokens.Add(new Token(TokenType.Is, "if "));
+                            break;  
+                        }
+                        case TokenType.DropSet:
+                        {
+                            Tokens.Add(new Token(TokenType.DropSet, "while "));
+                            break;  
                         }
                         default:
                         {
@@ -216,14 +255,33 @@ namespace Tokenizer
             char start = (char)_currentChar;
             
             _currentChar = _inStream.Read();
-            
-            while (_isLetter())
+
+            while (_isLetter() || _isDigit())
             {
                 outString += (char)_currentChar;
                 _currentChar = _inStream.Read();
 
-                switch ((char) _currentChar) //TODO Handle escapable characters e.g. the ' in "Isn't"
+                switch ((char) _currentChar)
                 {
+                    case '\\':
+                    {
+                        outString += (char) _currentChar;
+                        _currentChar = _inStream.Read();
+                        
+                        switch ((char) _currentChar)
+                        {
+                            case '\'':
+                            case '\"':
+                            case '\\':
+                            {
+                                outString += (char) _currentChar;
+                                _currentChar = _inStream.Read();
+                                break;
+                            }
+                        }
+                       
+                        break;
+                    }
                     case ' ':
                     {
                         outString += (char) _currentChar;

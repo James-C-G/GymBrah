@@ -6,64 +6,71 @@ using ValueType = Compiler.ValueType;
 
 namespace Calculator
 {
-    public class Calculator : Parse<int>
+    public class Calculator : Parse
     {
-        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
-        {}
+        private readonly bool _parseMaths;
 
-        private CalculatorNode _parseFactor()
+        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool parseMaths = true) : 
+            base(tokens, ref variableTable)
+        {
+            _parseMaths = parseMaths;
+        }
+
+        private Node _parseFactor()
         {
             switch (CurrentToken.Type)
             {
                 case TokenType.Negate:
                 {
                     ScanToken();
-                    return new NegateNode(_parseFactor());
+                    if (_parseMaths) return new NegateNode(_parseFactor());
+                    return new NegateNodeString(_parseFactor());
                 }
                 case TokenType.Integer:
                 {
-                    return new IntegerNode(ScanToken().IntegerContent);
+                    return new TerminalNode(ScanToken());
                 }
                 case TokenType.Id:
                 {
-                    if (VariableTable.TryGetValue(ScanToken().StringContent, out Value result))
+                    Token idToken = ScanToken();
+                    if (VariableTable.TryGetValue(idToken.Content, out Value result))
                     {
-                        // TODO Remove?
                         if (result.Type == ValueType.Integer)
                         {
                             // Check that variable exists and is of the right type
-                            return new IdNode(((IntegerValue)result).Content);
+                            if (_parseMaths) return new TerminalNode(new Token(TokenType.Id, ((IntegerValue)result).Content));
+                            return new TerminalNode(idToken);
                         }
 
-                        throw new Exception("Variable not an integer.");
+                        throw new Exception("Variable is not an integer.");
                     }
 
-                    throw new Exception("Variable not defined.");
+                    throw new Exception("Variable is not defined.");
                 }
                 case TokenType.OpenBracket: //TODO Doesn't handle close bracket errors
                 {
                     ScanToken();
                     
-                    CalculatorNode node = ParseTree();
+                    Node node = ParseTree();
                     
                     if(CurrentToken.Type == TokenType.CloseBracket)
                     {
                         ScanToken();
-                        return node;
+                        return _parseMaths ? node : new BracketNodeString(node);
                     }
 
-                    throw new Exception("Bracket Error");
+                    throw new Exception("Bracket not closed properly.");
                 }
                 default:
                 {
-                    throw new Exception("Error"); //TODO Make detailed
+                    throw new Exception("Invalid token in calculation " + CurrentToken.Content); 
                 }
             }
         }
         
-        private CalculatorNode _parseTerm()
+        private Node _parseTerm()
         {
-            CalculatorNode nodeOne = _parseFactor();
+            Node nodeOne = _parseFactor();
 
             while (true)
             {
@@ -72,17 +79,17 @@ namespace Calculator
                     case TokenType.Multiply:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _parseFactor();
+                        Node nodeTwo = _parseFactor();
                         
-                        nodeOne = new MultiplyNode(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new MultiplyNode(nodeOne, nodeTwo) : new MultiplyNodeString(nodeOne, nodeTwo);
                         break;
                     }
                     case TokenType.Divide:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _parseFactor();
+                        Node nodeTwo = _parseFactor();
                         
-                        nodeOne = new DivideNode(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new DivideNode(nodeOne, nodeTwo) : new DivideNodeString(nodeOne, nodeTwo);
                         break;
                     }
                     default:
@@ -93,9 +100,9 @@ namespace Calculator
             }
         }
         
-        public override CalculatorNode ParseTree()
+        public override Node ParseTree()
         {
-            CalculatorNode nodeOne = _parseTerm();
+            Node nodeOne = _parseTerm();
             
             while (true)
             {
@@ -104,18 +111,18 @@ namespace Calculator
                     case TokenType.Addition:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _parseTerm();
+                        Node nodeTwo = _parseTerm();
                     
-                        nodeOne = new AddNode(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new AddNode(nodeOne, nodeTwo) : new AddNodeString(nodeOne, nodeTwo);
 
                         break;
                     }
                     case TokenType.Subtraction:
                     {
                         ScanToken();
-                        CalculatorNode nodeTwo = _parseTerm();
+                        Node nodeTwo = _parseTerm();
                     
-                        nodeOne = new SubtractNode(nodeOne, nodeTwo);
+                        nodeOne = _parseMaths ? new SubtractNode(nodeOne, nodeTwo) : new SubtractNodeString(nodeOne, nodeTwo);
 
                         break;
                     }
@@ -132,13 +139,13 @@ namespace Calculator
     {
         static void Main(string[] args)
         {
-            Lexer lex = new Lexer("x 3?");
+            Lexer lex = new Lexer("(x * 3 + 4) / 2?");
             Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new IntegerValue(10));
+            var.Add("x", new IntegerValue("10"));
             
             Calculator calculator = new Calculator(lex.Tokens, ref var);
-            CalculatorNode result = calculator.ParseTree();
-            int e = result.Evaluate();
+            Node result = calculator.ParseTree();
+            string e = result.Evaluate();
             Console.Out.WriteLine(e);
         }
     }

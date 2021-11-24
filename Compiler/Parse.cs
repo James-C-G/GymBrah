@@ -4,7 +4,7 @@ using Tokenizer;
 
 namespace Compiler
 {
-    public abstract class Parse<T>
+    public abstract class Parse
     {
         private int _counter;
         protected Token CurrentToken;
@@ -18,7 +18,7 @@ namespace Compiler
             VariableTable = variableTable;
         }
 
-        public abstract Node<T> ParseTree();
+        public abstract Node ParseTree();
 
         protected List<Token> GetTokens() { return _tokens; }
         
