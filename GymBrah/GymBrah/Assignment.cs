@@ -4,7 +4,7 @@ using Compiler;
 using Tokenizer;
 using ValueType = Compiler.ValueType;
 
-namespace Assignment
+namespace GymBrah
 {
     public class Assignment : Parse
     {
@@ -115,7 +115,7 @@ namespace Assignment
                     calcTokens.Insert(0, new Token(TokenType.OpenBracket, "("));
                     calcTokens.Insert(calcTokens.Count - 1, new Token(TokenType.CloseBracket, ")"));
 
-                    string calculation = new Calculator.Calculator(calcTokens, ref VariableTable).ParseTree().Evaluate();
+                    string calculation = new Calculator(calcTokens, ref VariableTable).ParseTree().Evaluate();
                     
                     if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation)))
                         VariableTable[_variableName] = new IntegerValue(calculation);
@@ -163,19 +163,19 @@ namespace Assignment
         }
 
 
-        public static void Main()
-        {
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new StringValue("this"));
-            var.Add("y", new StringValue("\"this\""));
-            
-            Lexer lexer = new Lexer("can x \"4\"?");
-            Assignment x = new Assignment(lexer.Tokens, ref var);
-            Console.Out.WriteLine(x.ParseTree().Evaluate());
-            
-            // lexer = new Lexer("can x bench x + 5 * 2 / 1 plates?");
-            // x = new Assignment(lexer.Tokens, ref var);
-            // Console.Out.WriteLine(x.ParseTree().Evaluate());
-        }
+        // public static void Main()
+        // {
+        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
+        //     var.Add("x", new StringValue("this"));
+        //     var.Add("y", new StringValue("\"this\""));
+        //     
+        //     Lexer lexer = new Lexer("can x \"4\"?");
+        //     Assignment x = new Assignment(lexer.Tokens, ref var);
+        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
+        //     
+        //     // lexer = new Lexer("can x bench x + 5 * 2 / 1 plates?");
+        //     // x = new Assignment(lexer.Tokens, ref var);
+        //     // Console.Out.WriteLine(x.ParseTree().Evaluate());
+        // }
     }
 }

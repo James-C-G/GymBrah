@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using Boolean;
 using Compiler;
 using Tokenizer;
 
-namespace Selection
+namespace GymBrah
 {
     public class Selection : Parse
     {
@@ -61,7 +60,7 @@ namespace Selection
 
                     nodeOne.AddRange(nodeTwo);
                     
-                    return new SelectionNode(cur, new Boolean.Boolean(nodeOne, ref VariableTable).ParseTree());
+                    return new SelectionNode(cur, new Boolean(nodeOne, ref VariableTable).ParseTree());
                 }
                 default:
                 {
@@ -69,15 +68,17 @@ namespace Selection
                 }
             }
         }
+        
+        //TODO This needs to have its own scope i.e its own variable table
 
-        public static void Main()
-        {
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new IntegerValue("2"));
-            
-            Lexer lexer = new Lexer("x+3 is == 5-x lightweight");
-            Selection x = new Selection(lexer.Tokens, ref var);
-            Console.Out.WriteLine(x.ParseTree().Evaluate());
-        }
+        // public static void Main()
+        // {
+        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
+        //     var.Add("x", new IntegerValue("2"));
+        //     
+        //     Lexer lexer = new Lexer("x+3 is == 5-x lightweight");
+        //     Selection x = new Selection(lexer.Tokens, ref var);
+        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
+        // }
     }
 }

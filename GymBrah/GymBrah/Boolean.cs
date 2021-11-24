@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
 
-namespace Boolean
+namespace GymBrah
 {
     public class Boolean : Parse
     {
@@ -97,8 +97,8 @@ namespace Boolean
                     exprTwo.Add(new Token(TokenType.EoL, ";"));
                     
                     return new BoolComparisonNode(
-                        new Calculator.Calculator(exprOne, ref VariableTable, false).ParseTree(), 
-                        new Calculator.Calculator(exprTwo, ref VariableTable, false).ParseTree(), 
+                        new Calculator(exprOne, ref VariableTable, false).ParseTree(), 
+                        new Calculator(exprTwo, ref VariableTable, false).ParseTree(), 
                         nodeOne);
                 }
                 ScanToken();
@@ -108,12 +108,12 @@ namespace Boolean
             return null;
         }
         
-        public static void Main()
-        {
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            Lexer lexer = new Lexer("!= 8");
-            Boolean x = new Boolean(lexer.Tokens, ref var);
-            Console.Out.WriteLine(x.ParseTree().Evaluate());
-        }
+        // public static void Main()
+        // {
+        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
+        //     Lexer lexer = new Lexer("!= 8");
+        //     Boolean x = new Boolean(lexer.Tokens, ref var);
+        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
+        // }
     }
 }

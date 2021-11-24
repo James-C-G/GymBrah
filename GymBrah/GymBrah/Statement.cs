@@ -4,7 +4,7 @@ using Compiler;
 using Tokenizer;
 using ValueType = Compiler.ValueType;
 
-namespace Statement
+namespace GymBrah
 {
     public class Statement : Parse
     {
@@ -84,15 +84,15 @@ namespace Statement
             }
         }
         
-        public static void Main()
-        {
-            Lexer lexer = new Lexer("scream y!");
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new StringValue("\"output\""));
-            var.Add("y", new IntegerValue("10"));
-            
-            Statement x = new Statement(lexer.Tokens, ref var);
-            Console.Out.WriteLine(x.ParseTree().Evaluate());
-        }
+        // public static void Main()
+        // {
+        //     Lexer lexer = new Lexer("scream y!");
+        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
+        //     var.Add("x", new StringValue("\"output\""));
+        //     var.Add("y", new IntegerValue("10"));
+        //     
+        //     Statement x = new Statement(lexer.Tokens, ref var);
+        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
+        // }
     }
 }

@@ -4,7 +4,7 @@ using Compiler;
 using Tokenizer;
 using ValueType = Compiler.ValueType;
 
-namespace Calculator
+namespace GymBrah
 {
     public class Calculator : Parse
     {
@@ -135,18 +135,18 @@ namespace Calculator
         }
     }
     
-    class Program
-    {
-        static void Main(string[] args)
-        {
-            Lexer lex = new Lexer("(x * 3 + 4) / 2?");
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new IntegerValue("10"));
-            
-            Calculator calculator = new Calculator(lex.Tokens, ref var);
-            Node result = calculator.ParseTree();
-            string e = result.Evaluate();
-            Console.Out.WriteLine(e);
-        }
-    }
+    // class Program
+    // {
+    //     static void Main(string[] args)
+    //     {
+    //         Lexer lex = new Lexer("(x * 3 + 4) / 2?");
+    //         Dictionary<String, Value> var = new Dictionary<String, Value>();
+    //         var.Add("x", new IntegerValue("10"));
+    //         
+    //         Calculator calculator = new Calculator(lex.Tokens, ref var);
+    //         Node result = calculator.ParseTree();
+    //         string e = result.Evaluate();
+    //         Console.Out.WriteLine(e);
+    //     }
+    // }
 }

@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GymBrah", "GymBrah\GymBrah.csproj", "{1CDF6B71-9375-4961-A301-6BE9E364A8DE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Compiler", "Compiler\Compiler.csproj", "{679DE96C-53E8-477B-8DF2-517A86A7FFA1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tokenizer", "Tokenizer\Tokenizer.csproj", "{9A223FA7-CA37-400B-B1A7-80E4D9622EFD}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1CDF6B71-9375-4961-A301-6BE9E364A8DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1CDF6B71-9375-4961-A301-6BE9E364A8DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1CDF6B71-9375-4961-A301-6BE9E364A8DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1CDF6B71-9375-4961-A301-6BE9E364A8DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{679DE96C-53E8-477B-8DF2-517A86A7FFA1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{679DE96C-53E8-477B-8DF2-517A86A7FFA1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{679DE96C-53E8-477B-8DF2-517A86A7FFA1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{679DE96C-53E8-477B-8DF2-517A86A7FFA1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A223FA7-CA37-400B-B1A7-80E4D9622EFD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A223FA7-CA37-400B-B1A7-80E4D9622EFD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A223FA7-CA37-400B-B1A7-80E4D9622EFD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A223FA7-CA37-400B-B1A7-80E4D9622EFD}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
