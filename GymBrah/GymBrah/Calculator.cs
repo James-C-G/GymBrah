@@ -1,4 +1,15 @@
-﻿using System;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
+ *                  Statement.cs 
+ * Last Modified :  10/12/21
+ * Version :        1.4
+ * Description :    Calculator parse tree that parses mathematical expressions. Returns a parse tree of of either
+ *                  integer nodes that when evaluated return a single integer output of the evaluated expression, or
+ *                  string nodes which when evaluated return the entire expression in string form.
+ */
+
+using System;
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
@@ -6,16 +17,32 @@ using ValueType = Compiler.ValueType;
 
 namespace GymBrah
 {
+    /// <summary>
+    /// Calculator parse tree class that builds a mathematical expression tree that can be evaluated into a single
+    /// integer value, or an entire string for the expression.
+    /// </summary>
     public class Calculator : Parse
     {
-        private readonly bool _parseMaths;
+        // Boolean for either return of string of expression or compilation of expression
+        private readonly bool _parseMaths; 
 
+        /// <summary>
+        /// Inherited constructor and a boolean for either the string or integer evaluation.
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <param name="variableTable"></param>
+        /// <param name="parseMaths"> Boolean for type of evaluation. </param>
         public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool parseMaths = true) : 
             base(tokens, ref variableTable)
         {
             _parseMaths = parseMaths;
         }
 
+        /// <summary>
+        /// Method for parsing the individual factors of an expression.
+        /// </summary>
+        /// <returns> Node of a factor. </returns>
+        /// <exception cref="Exception"> Errors in parsing. </exception>
         private Node _parseFactor()
         {
             switch (CurrentToken.Type)
@@ -30,14 +57,16 @@ namespace GymBrah
                 {
                     return new TerminalNode(ScanToken());
                 }
-                case TokenType.Id:
+                case TokenType.Id: // Identifier
                 {
                     Token idToken = ScanToken();
+                    
+                    // Check identifier exists
                     if (VariableTable.TryGetValue(idToken.Content, out Value result))
                     {
                         if (result.Type == ValueType.Integer)
                         {
-                            // Check that variable exists and is of the right type
+                            // Check that variable is of the right type
                             if (_parseMaths) return new TerminalNode(new Token(TokenType.Id, ((IntegerValue)result).Content));
                             return new TerminalNode(idToken);
                         }
@@ -53,6 +82,7 @@ namespace GymBrah
                     
                     Node node = ParseTree();
                     
+                    // Parse until a close bracket
                     if(CurrentToken.Type == TokenType.CloseBracket)
                     {
                         ScanToken();
@@ -68,15 +98,20 @@ namespace GymBrah
             }
         }
         
+        /// <summary>
+        /// Method for parsing terms of a mathematical expression.
+        /// </summary>
+        /// <returns> Node of a term. </returns>
         private Node _parseTerm()
         {
             Node nodeOne = _parseFactor();
 
             while (true)
             {
+                // Parse factors for BIDMAS maintenance
                 switch (CurrentToken.Type)
                 {
-                    case TokenType.Multiply:
+                    case TokenType.Multiply: 
                     {
                         ScanToken();
                         Node nodeTwo = _parseFactor();
@@ -100,12 +135,17 @@ namespace GymBrah
             }
         }
         
+        /// <summary>
+        /// Parse method that parses the list of given tokens and returns a node which can be evaluated.
+        /// </summary>
+        /// <returns> Parse tree node. </returns>
         public override Node ParseTree()
         {
             Node nodeOne = _parseTerm();
             
             while (true)
             {
+                // Parse for BIDMAS maintenance
                 switch (CurrentToken.Type)
                 {
                     case TokenType.Addition:
@@ -134,19 +174,4 @@ namespace GymBrah
             }
         }
     }
-    
-    // class Program
-    // {
-    //     static void Main(string[] args)
-    //     {
-    //         Lexer lex = new Lexer("(x * 3 + 4) / 2?");
-    //         Dictionary<String, Value> var = new Dictionary<String, Value>();
-    //         var.Add("x", new IntegerValue("10"));
-    //         
-    //         Calculator calculator = new Calculator(lex.Tokens, ref var);
-    //         Node result = calculator.ParseTree();
-    //         string e = result.Evaluate();
-    //         Console.Out.WriteLine(e);
-    //     }
-    // }
 }

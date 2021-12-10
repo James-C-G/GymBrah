@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
+ *                  Statement.cs 
+ * Last Modified :  10/12/21
+ * Version :        1.4
+ * Description :    Selection parse tree to parse basic selection using boolean expressions.
+ */
+
+using System;
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
@@ -26,7 +35,7 @@ namespace GymBrah
                 exprTokens.Add(i);
             }
 
-            return null;
+            return null; // TODO Throw errors
         }
         
         private List<Token> _parseA()
@@ -44,7 +53,7 @@ namespace GymBrah
                 exprTokens.Add(i);
             }
 
-            return null;
+            return null;  //TODO Throw errors
         }
 
         public override Node ParseTree()
@@ -64,21 +73,9 @@ namespace GymBrah
                 }
                 default:
                 {
-                    return null;
+                    throw new Exception("Unrecognised key word.");
                 }
             }
         }
-        
-        //TODO This needs to have its own scope i.e its own variable table
-
-        // public static void Main()
-        // {
-        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
-        //     var.Add("x", new IntegerValue("2"));
-        //     
-        //     Lexer lexer = new Lexer("x+3 is == 5-x lightweight");
-        //     Selection x = new Selection(lexer.Tokens, ref var);
-        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
-        // }
     }
 }

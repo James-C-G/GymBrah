@@ -1,9 +1,10 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Lexer.cs, Tokens.cs
- * Last Modified :  06/10/21
+ * Last Modified :  06/12/21
  * Version :        1.4
- * Description :    
+ * Description :    Class for the storage of tokens in the lexical analysis phase. Wrapper classes for the keywords and
+ *                  tokens are defined here.
  */
 
  
@@ -12,40 +13,48 @@ using System.Collections.Generic;
 
 namespace Tokenizer
 {
-    // Enum of all token types for the language
+    /// <summary>
+    /// Enum of all token types for the language. 
+    /// </summary>
     public enum TokenType
     {
         Illegal,    // Illegal character
-        EoL,
+        EoL,        // End of line
 
         Bench,      // int
         Squat,      // string
+        DeadLift,   // Bool
         Can,        // =
+        
         Plates,     // ( var * 40) + 20 
+        
         Scream,     // Printf("")
         Is,         // If
         DropSet,    // While
         
-        OpenBracket,
-        CloseBracket,
+        OpenBracket,    // (    
+        CloseBracket,   // )
         LightWeight,    // {
         Baby,           // }
         Id,
 
         Integer,
-        String,
-        Equals,
+        String,         
+        Equals,         // =
         LessThan,       // <
         GreaterThan,    // >
         Not,            // !
         
-        Addition,
-        Subtraction,
-        Multiply,
-        Divide,
-        Negate
+        Addition,       // +
+        Subtraction,    // -    
+        Multiply,       // *
+        Divide,         // /
+        Negate          // -()
     }
 
+    /// <summary>
+    /// Keyword class to initialise the dictionary of keywords.
+    /// </summary>
     public class KeyWords
     {
         public Dictionary<String, TokenType> Dict = new Dictionary<String, TokenType>()
@@ -53,6 +62,7 @@ namespace Tokenizer
             {"can", TokenType.Can},
             {"bench", TokenType.Bench},
             {"squat", TokenType.Squat},
+            {"deadlift", TokenType.DeadLift},
             {"plates", TokenType.Plates},
             {"scream", TokenType.Scream},
             {"lightweight", TokenType.LightWeight},
@@ -62,26 +72,29 @@ namespace Tokenizer
         };
     }
 
+    /// <summary>
+    /// Token class to initialise a token with a type and content.
+    /// </summary>
     public class Token
     {
         public TokenType Type;
-        // public String StringContent;
-        // public int IntegerContent;
         public string Content;
 
+        /// <summary>
+        /// Constructor to initialise variables.
+        /// </summary>
+        /// <param name="type"> Token type. </param>
+        /// <param name="contents"> Token content. </param>
         public Token(TokenType type, string contents)
         {
             Type = type;
-            // StringContent = contents;
             Content = contents;
         }
 
-        // public Token(TokenType type, int contents)
-        // {
-        //     Type = type;
-        //     IntegerContent = contents;
-        // }
-
+        /// <summary>
+        /// To string method.
+        /// </summary>
+        /// <returns> Token type. </returns>
         public override string ToString()
         {
             return Type.ToString();

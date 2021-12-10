@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
+ *                  Statement.cs 
+ * Last Modified :  06/12/21
+ * Version :        1.4
+ * Description :    Assignment parse tree that parses assignment expressions.
+ */
+
+using System;
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
@@ -10,8 +19,13 @@ namespace GymBrah
     {
         private TokenType _assignmentType;
         private string _variableName;
-        public Assignment(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
-        {}
+        private readonly bool _evaluate;
+
+        public Assignment(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool evaluate = true) : base(tokens,
+            ref variableTable)
+        {
+            _evaluate = evaluate;
+        }
 
         private Node _parseLeftB()
         {
@@ -68,6 +82,8 @@ namespace GymBrah
                         {
                             throw new Exception("Variable being assigned is already defined and not of the correct type.");
                         }
+
+                        throw new Exception("Variable cannot be redefined.");
                     }
                     
                     if (nodeOne == null) return new TerminalNode(start);
@@ -119,7 +135,9 @@ namespace GymBrah
                     
                     if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation)))
                         VariableTable[_variableName] = new IntegerValue(calculation);
-                        
+                    
+                    if (!_evaluate) calculation = new Calculator(calcTokens, ref VariableTable, false).ParseTree().Evaluate();
+                    
                     return new VariableNode(new Token(TokenType.Integer, calculation), 
                         new TerminalNode(new Token(TokenType.EoL, ";")));
                 }
@@ -130,7 +148,9 @@ namespace GymBrah
                     if (CurrentToken.Type == TokenType.Id)
                     {
                         VariableTable.TryGetValue(CurrentToken.Content, out Value result);
-                        returnToken = new Token(TokenType.String, ((StringValue) result).Content);
+                        
+                        if (!_evaluate) returnToken = CurrentToken;
+                        else returnToken = new Token(TokenType.String, ((StringValue) result).Content);
                     }
                     
                     if (!VariableTable.TryAdd(_variableName, new StringValue(returnToken.Content)))
@@ -161,21 +181,5 @@ namespace GymBrah
                 }
             }
         }
-
-
-        // public static void Main()
-        // {
-        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
-        //     var.Add("x", new StringValue("this"));
-        //     var.Add("y", new StringValue("\"this\""));
-        //     
-        //     Lexer lexer = new Lexer("can x \"4\"?");
-        //     Assignment x = new Assignment(lexer.Tokens, ref var);
-        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
-        //     
-        //     // lexer = new Lexer("can x bench x + 5 * 2 / 1 plates?");
-        //     // x = new Assignment(lexer.Tokens, ref var);
-        //     // Console.Out.WriteLine(x.ParseTree().Evaluate());
-        // }
     }
 }

@@ -1,4 +1,13 @@
-﻿using System;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
+ *                  Statement.cs 
+ * Last Modified :  10/12/21
+ * Version :        1.4
+ * Description :    Repetition parse tree to parse the while loops using boolean expressions.
+ */
+
+using System;
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
@@ -22,20 +31,9 @@ namespace GymBrah
                 }
                 default:
                 {
-                    return null;
+                    return null;  //TODO Throw errors
                 }
             }
         }
-        
-        // public static void Main()
-        // {
-        //     Dictionary<String, Value> var = new Dictionary<String, Value>();
-        //     var.Add("x", new IntegerValue("2"));
-        //     
-        //     Lexer lexer = new Lexer("dropset x == 5 lightweight");
-        //     Repetition x = new Repetition(lexer.Tokens, ref var);
-        //     
-        //     Console.Out.WriteLine(x.ParseTree().Evaluate());
-        // }
     }
 }
