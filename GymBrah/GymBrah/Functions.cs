@@ -106,7 +106,7 @@ namespace GymBrah
                                     }
                                     ScanToken();
                                 }
-                                // pure aids to get it working
+                               
                                 string outputstring = functionname.Content + "(";
                                 for(int c = 0;c< variables.Count; c++)
                                 {
