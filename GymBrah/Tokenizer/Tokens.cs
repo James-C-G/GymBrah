@@ -31,6 +31,7 @@ namespace Tokenizer
         Scream,     // Printf("")
         Is,         // If
         DropSet,    // While
+        Brosplit,    // function
         
         OpenBracket,    // (    
         CloseBracket,   // )
@@ -44,6 +45,8 @@ namespace Tokenizer
         LessThan,       // <
         GreaterThan,    // >
         Not,            // !
+
+        Comma,
         
         Addition,       // +
         Subtraction,    // -    
@@ -68,6 +71,7 @@ namespace Tokenizer
             {"lightweight", TokenType.LightWeight},
             {"baby", TokenType.Baby},
             {"is", TokenType.Is},
+            {"brosplit", TokenType.Brosplit},
             {"dropset", TokenType.DropSet}
         };
     }

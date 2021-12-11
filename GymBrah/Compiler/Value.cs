@@ -26,6 +26,7 @@ namespace Compiler
     /// </summary>
     public enum ValueType
     {
+        Function = TokenType.Brosplit,
         Integer = TokenType.Integer,
         String = TokenType.String,
     }
@@ -41,7 +42,7 @@ namespace Compiler
         {
             Type = type;
         }
-    }
+    } 
 
     /// <summary>
     /// Value class for the storage of integers.

@@ -19,7 +19,12 @@ namespace GymBrah
     /// </summary>
     public class Boolean : Parse
     {
+<<<<<<< Updated upstream
         public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
+=======
+        private TokenType _comparisonType;
+        public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable, ref functions)
+>>>>>>> Stashed changes
         {}
         
         /// <summary>
@@ -193,8 +198,8 @@ namespace GymBrah
                     exprTwo.Add(new Token(TokenType.EoL, ";"));
                     
                     return new BoolComparisonNode(
-                        new Calculator(exprOne, ref VariableTable, false).ParseTree(), 
-                        new Calculator(exprTwo, ref VariableTable, false).ParseTree(), 
+                        new Calculator(exprOne, ref VariableTable,ref Functions, false).ParseTree(), 
+                        new Calculator(exprTwo, ref VariableTable,ref Functions, false).ParseTree(), 
                         nodeOne);
                 }
                 ScanToken();

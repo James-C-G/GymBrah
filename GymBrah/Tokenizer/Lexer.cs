@@ -150,9 +150,16 @@ namespace Tokenizer
                         _currentChar = _inStream.Read();
                         break;
                     }
+<<<<<<< Updated upstream
                     case '#': // Comment character
                     {
                         _getComment();
+=======
+                    case ',':
+                    {
+                        Tokens.Add(new Token(TokenType.Comma, ","));
+                        _currentChar = _inStream.Read();
+>>>>>>> Stashed changes
                         break;
                     }
                     default:

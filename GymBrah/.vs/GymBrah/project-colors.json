@@ -1,0 +1,21 @@
+{
+  "Version": 1,
+  "ProjectMap": {
+    "1cdf6b71-9375-4961-a301-6be9e364a8de": {
+      "ProjectGuid": "1cdf6b71-9375-4961-a301-6be9e364a8de",
+      "DisplayName": "GymBrah",
+      "ColorIndex": 0
+    },
+    "679de96c-53e8-477b-8df2-517a86a7ffa1": {
+      "ProjectGuid": "679de96c-53e8-477b-8df2-517a86a7ffa1",
+      "DisplayName": "Compiler",
+      "ColorIndex": 1
+    },
+    "9a223fa7-ca37-400b-b1a7-80e4d9622efd": {
+      "ProjectGuid": "9a223fa7-ca37-400b-b1a7-80e4d9622efd",
+      "DisplayName": "Tokenizer",
+      "ColorIndex": 2
+    }
+  },
+  "NextColorIndex": 3
+}

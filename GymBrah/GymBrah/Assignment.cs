@@ -19,6 +19,7 @@ namespace GymBrah
     {
         private TokenType _assignmentType;
         private string _variableName;
+<<<<<<< Updated upstream
         private readonly bool _evaluate;
 
         public Assignment(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool evaluate = true) : base(tokens,
@@ -26,6 +27,10 @@ namespace GymBrah
         {
             _evaluate = evaluate;
         }
+=======
+        public Assignment(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable,ref functions)
+        {}
+>>>>>>> Stashed changes
 
         private Node _parseLeftB()
         {
@@ -131,7 +136,7 @@ namespace GymBrah
                     calcTokens.Insert(0, new Token(TokenType.OpenBracket, "("));
                     calcTokens.Insert(calcTokens.Count - 1, new Token(TokenType.CloseBracket, ")"));
 
-                    string calculation = new Calculator(calcTokens, ref VariableTable).ParseTree().Evaluate();
+                    string calculation = new Calculator(calcTokens, ref VariableTable,ref Functions).ParseTree().Evaluate();
                     
                     if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation)))
                         VariableTable[_variableName] = new IntegerValue(calculation);

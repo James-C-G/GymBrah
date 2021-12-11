@@ -1,0 +1,16 @@
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\Tokenizer.exe
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\Tokenizer.deps.json
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\Tokenizer.runtimeconfig.json
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\Tokenizer.runtimeconfig.dev.json
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\Tokenizer.dll
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\ref\Tokenizer.dll
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\bin\Debug\net5.0\Tokenizer.pdb
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.csproj.AssemblyReference.cache
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.AssemblyInfoInputs.cache
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.AssemblyInfo.cs
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.csproj.CoreCompileInputs.cache
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.dll
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\ref\Tokenizer.dll
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.pdb
+C:\Users\44784\Documents\GitHub\GymBrah\GymBrah\Tokenizer\obj\Debug\net5.0\Tokenizer.genruntimeconfig.cache

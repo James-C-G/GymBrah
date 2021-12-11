@@ -26,6 +26,7 @@ namespace GymBrah
         // Boolean for either return of string of expression or compilation of expression
         private readonly bool _parseMaths; 
 
+<<<<<<< Updated upstream
         /// <summary>
         /// Inherited constructor and a boolean for either the string or integer evaluation.
         /// </summary>
@@ -34,6 +35,10 @@ namespace GymBrah
         /// <param name="parseMaths"> Boolean for type of evaluation. </param>
         public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool parseMaths = true) : 
             base(tokens, ref variableTable)
+=======
+        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions ,bool parseMaths = true) : 
+            base(tokens, ref variableTable,ref functions)
+>>>>>>> Stashed changes
         {
             _parseMaths = parseMaths;
         }

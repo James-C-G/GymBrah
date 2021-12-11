@@ -23,17 +23,23 @@ namespace Compiler
         protected Token CurrentToken;
         private readonly List<Token> _tokens;
         protected Dictionary<String, Value> VariableTable;
+        protected Dictionary<String, FunctionTable> Functions;
         
+<<<<<<< Updated upstream
         /// <summary>
         /// Constructor to initialise variables, and set up current token..
         /// </summary>
         /// <param name="tokens"> List of tokens to parse. </param>
         /// <param name="variableTable"> Variable table. </param>
         protected Parse(List<Token> tokens, ref Dictionary<String, Value> variableTable)
+=======
+        protected Parse(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions)
+>>>>>>> Stashed changes
         {
             _tokens = tokens;
             CurrentToken = tokens[_counter];
             VariableTable = variableTable;
+            Functions = functions;
         }
 
         /// <summary>

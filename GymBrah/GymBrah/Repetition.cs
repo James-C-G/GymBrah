@@ -16,18 +16,18 @@ namespace GymBrah
 {
     public class Repetition : Parse
     {
-        public Repetition(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
+        public Repetition(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable,ref functions)
         {}
 
         public override Node ParseTree()
         {
             switch (CurrentToken.Type)
             {
-                case TokenType.DropSet:
+                case TokenType.Brosplit:
                 {
                     Token cur = ScanToken();
 
-                    return new SelectionNode(cur, new Boolean(GetRemainingTokens(), ref VariableTable).ParseTree());
+                        return null;
                 }
                 default:
                 {

@@ -20,6 +20,7 @@ namespace GymBrah
     /// </summary>
     public class Statement : Parse
     {
+<<<<<<< Updated upstream
         private readonly bool _evaluate; // Bool to describe whether identifiers should be evaluated or not
 
         public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool evaluate = true) : 
@@ -27,6 +28,10 @@ namespace GymBrah
         {
             _evaluate = evaluate;
         }
+=======
+        public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String,FunctionTable> functions) : base(tokens, ref variableTable, ref functions)
+        {}
+>>>>>>> Stashed changes
 
         /// <summary>
         /// Parse method to handle key words of statements and EoL.
@@ -111,5 +116,19 @@ namespace GymBrah
                 }
             }
         }
+<<<<<<< Updated upstream
+=======
+
+/*        public static void Main()
+        {
+            Lexer lexer = new Lexer("scream y?");
+            Dictionary<String, Value> var = new Dictionary<String, Value>();
+            var.Add("x", new StringValue("\"output\""));
+            var.Add("y", new IntegerValue("10"));
+
+            Statement x = new Statement(lexer.Tokens, ref var);
+            Console.Out.WriteLine(x.ParseTree().Evaluate());
+        }*/
+>>>>>>> Stashed changes
     }
 }

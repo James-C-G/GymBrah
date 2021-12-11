@@ -16,7 +16,7 @@ namespace GymBrah
 {
     public class Selection : Parse
     {
-        public Selection(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
+        public Selection(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable, ref functions)
         {}
 
         private List<Token> _parseB()
@@ -67,9 +67,10 @@ namespace GymBrah
                     Token cur = ScanToken();
                     List<Token> nodeTwo = _parseB();
 
+
                     nodeOne.AddRange(nodeTwo);
                     
-                    return new SelectionNode(cur, new Boolean(nodeOne, ref VariableTable).ParseTree());
+                    return new SelectionNode(cur, new Boolean(nodeOne, ref VariableTable,ref Functions).ParseTree());
                 }
                 default:
                 {
@@ -77,5 +78,20 @@ namespace GymBrah
                 }
             }
         }
+<<<<<<< Updated upstream
+=======
+
+        //TODO This needs to have its own scope i.e its own variable table
+
+/*        public static void Main()
+        {
+            Dictionary<String, Value> var = new Dictionary<String, Value>();
+            var.Add("x", new IntegerValue("2"));
+
+            Lexer lexer = new Lexer("x is == 8 lightweight");
+            Selection x = new Selection(lexer.Tokens, ref var);
+            Console.Out.WriteLine(x.ParseTree().Evaluate());
+        }*/
+>>>>>>> Stashed changes
     }
 }
