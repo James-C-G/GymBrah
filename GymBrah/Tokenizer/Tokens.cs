@@ -18,35 +18,37 @@ namespace Tokenizer
     /// </summary>
     public enum TokenType
     {
-        Illegal,    // Illegal character
-        EoL,        // End of line
+        Illegal,        // Illegal character
+        EoL,            // End of line
 
-        Bench,      // int
-        Squat,      // string
-        DeadLift,   // Bool
-        Can,        // =
+        Bench,          // int
+        Squat,          // string
+        DeadLift,       // double
+        Can,            // =
         
-        Plates,     // ( var * 40) + 20 
+        Plates,     // ( var * 40) + 20
+        BroSplit,   // Function definition
         
-        Scream,     // Printf("")
-        Is,         // If
-        DropSet,    // While
-        Brosplit,    // function
+        Scream,         // Printf("")
+        Is,             // If
+        DropSet,        // While
         
         OpenBracket,    // (    
         CloseBracket,   // )
         LightWeight,    // {
         Baby,           // }
-        Id,
+        Id,             // Identifier
 
-        Integer,
-        String,         
+        Integer,        // integer
+        String,         // string
+        Double,         // double
+        
         Equals,         // =
         LessThan,       // <
         GreaterThan,    // >
         Not,            // !
-
-        Comma,
+        
+        Comma,          // ,
         
         Addition,       // +
         Subtraction,    // -    
@@ -65,14 +67,14 @@ namespace Tokenizer
             {"can", TokenType.Can},
             {"bench", TokenType.Bench},
             {"squat", TokenType.Squat},
-            {"deadlift", TokenType.DeadLift},
             {"plates", TokenType.Plates},
             {"scream", TokenType.Scream},
             {"lightweight", TokenType.LightWeight},
             {"baby", TokenType.Baby},
             {"is", TokenType.Is},
-            {"brosplit", TokenType.Brosplit},
-            {"dropset", TokenType.DropSet}
+            {"dropset", TokenType.DropSet},
+            {"deadlift", TokenType.DeadLift},
+            {"brosplit", TokenType.BroSplit},
         };
     }
 

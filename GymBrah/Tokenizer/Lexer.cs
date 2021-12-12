@@ -150,16 +150,15 @@ namespace Tokenizer
                         _currentChar = _inStream.Read();
                         break;
                     }
-<<<<<<< Updated upstream
                     case '#': // Comment character
                     {
                         _getComment();
-=======
-                    case ',':
+                        break;
+                    }
+                    case ',': // Comma
                     {
                         Tokens.Add(new Token(TokenType.Comma, ","));
                         _currentChar = _inStream.Read();
->>>>>>> Stashed changes
                         break;
                     }
                     default:
@@ -203,14 +202,25 @@ namespace Tokenizer
         private void _getDigits()
         {
             String outString = "";
+            bool isDouble = false;
             
             while (_isDigit())
             {
                 outString += (char)_currentChar;
                 _currentChar = _inStream.Read();
+                
+                if ((char) _currentChar == '.') // Double handler
+                {
+                    if (isDouble) throw new Exception("Double cannot have more than one decimal point.");
+                    
+                    isDouble = true;
+                    outString += (char)_currentChar;
+                    _currentChar = _inStream.Read();
+                }
             }
-
-            Tokens.Add(new Token(TokenType.Integer, outString));
+            
+            if (isDouble) Tokens.Add(new Token(TokenType.Double, outString));
+            else Tokens.Add(new Token(TokenType.Integer, outString));
         }
 
         /// <summary>
@@ -264,7 +274,7 @@ namespace Tokenizer
                         }
                         case TokenType.DeadLift:
                         {
-                            Tokens.Add(new Token(TokenType.DeadLift, "bool "));
+                            Tokens.Add(new Token(TokenType.DeadLift, "double "));
                             break;
                         }
                         case TokenType.Can:

@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Selection.cs, Statement.cs  
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Statement parse tree to parse basic statements.
@@ -11,7 +11,6 @@ using System;
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
-using ValueType = Compiler.ValueType;
 
 namespace GymBrah
 {
@@ -20,18 +19,13 @@ namespace GymBrah
     /// </summary>
     public class Statement : Parse
     {
-<<<<<<< Updated upstream
         private readonly bool _evaluate; // Bool to describe whether identifiers should be evaluated or not
 
-        public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool evaluate = true) : 
-            base(tokens, ref variableTable)
+        public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable, bool evaluate = true) : 
+            base(tokens, ref variableTable, ref functionTable)
         {
             _evaluate = evaluate;
         }
-=======
-        public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String,FunctionTable> functions) : base(tokens, ref variableTable, ref functions)
-        {}
->>>>>>> Stashed changes
 
         /// <summary>
         /// Parse method to handle key words of statements and EoL.
@@ -76,6 +70,7 @@ namespace GymBrah
                     curToken.Content += ")";
                     return new ScreamContentNode(nodeOne, _parseB(), curToken);
                 }
+                case TokenType.Double:  // Print out a literal double
                 case TokenType.Integer: // Print out a literal integer
                 {
                     curToken = new Token(TokenType.String, "\"" + curToken.Content + "\"");
@@ -87,16 +82,22 @@ namespace GymBrah
                     {
                         switch(result.Type)
                         {
-                            case ValueType.String: // If string use %s
+                            case TokenType.String: // If string use %s
                             {
                                 if (!_evaluate) curToken.Content = "\"%s\"," + curToken.Content + ")";
                                 else curToken = new Token(TokenType.String, ((StringValue) result).Content + ")");
                                 break;
                             }
-                            case ValueType.Integer: // If integer use %d
+                            case TokenType.Integer: // If integer use %d
                             {
                                 if (!_evaluate) curToken.Content = "\"%d\"," + curToken.Content + ")";
                                 else curToken = new Token(TokenType.String, "\"" + ((IntegerValue) result).Content + "\")");
+                                break;
+                            }
+                            case TokenType.Double: // If double use %f
+                            {
+                                if (!_evaluate) curToken.Content = "\"%f\"," + curToken.Content + ")";
+                                else curToken = new Token(TokenType.String, "\"" + ((DoubleValue) result).Content + "\")");
                                 break;
                             }
                             default:
@@ -116,19 +117,5 @@ namespace GymBrah
                 }
             }
         }
-<<<<<<< Updated upstream
-=======
-
-/*        public static void Main()
-        {
-            Lexer lexer = new Lexer("scream y?");
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new StringValue("\"output\""));
-            var.Add("y", new IntegerValue("10"));
-
-            Statement x = new Statement(lexer.Tokens, ref var);
-            Console.Out.WriteLine(x.ParseTree().Evaluate());
-        }*/
->>>>>>> Stashed changes
     }
 }

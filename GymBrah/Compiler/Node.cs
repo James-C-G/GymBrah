@@ -1,21 +1,16 @@
-<<<<<<< Updated upstream
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Node.cs, Parse.cs, Value.cs
- * Last Modified :  06/12/21
+ * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    File of inherited node classes from the base abstract node class. Each of these nodes are used to
  *                  build the various tree's during the parsing process. General nodes have been created to cover
  *                  multiple uses, as well as unique nodes specific for their individual parse tree.
  */
 
-//TODO Left, Right == null for terminal, content made generic
+// TODO Left, Right == null for terminal, content made generic
+// TODO Maybe rephrase integer to value?
 
-=======
-﻿
-using System;
-using System.Collections.Generic;
->>>>>>> Stashed changes
 using Tokenizer;
 
 namespace Compiler
@@ -33,14 +28,10 @@ namespace Compiler
         /// <returns>Parsed string of the tree</returns>
         public abstract string Evaluate();
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Abstract node that inherits from the base node, and has links to nodes on it's left and right.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public abstract class LeftRightNode : Node
     {
         private protected readonly Node _left, _right;
@@ -52,18 +43,14 @@ namespace Compiler
         /// <param name="right"> Right node </param>
         protected LeftRightNode(Node left, Node right)
         {
-            _left = left;
+            _left = left; 
             _right = right;
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Abstract node class that inherits from the base node, and is a terminal node storing the node token.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public abstract class TokenNode : Node
     {
         private protected readonly Token _nodeToken;
@@ -77,14 +64,10 @@ namespace Compiler
             _nodeToken = nodeToken;
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Abstract node class that inherits from the base node, and stores a link to a single node.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public abstract class NodeNode : Node
     {
         private protected readonly Node _node;
@@ -100,14 +83,10 @@ namespace Compiler
     }
 
     // -------------------------------- General Nodes
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Terminal node that stores a token.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class TerminalNode : TokenNode
     {
         /// <summary>
@@ -115,32 +94,23 @@ namespace Compiler
         /// </summary>
         /// <param name="nodeToken"></param>
         public TerminalNode(Token nodeToken) : base(nodeToken)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluation method that returns the node's token content.
         /// </summary>
         /// <returns> String of token content </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _nodeToken.Content;
         }
     }
-
+    
     // -------------------------------- Calculator Nodes
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node to add two nodes together.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class AddNode : LeftRightNode
     {
 
@@ -150,31 +120,22 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public AddNode(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the addition of the integer content of the left and right nodes.
         /// </summary>
         /// <returns> String of the integer addition. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
-            return (int.Parse(_left.Evaluate()) + int.Parse(_right.Evaluate())).ToString();
+            return (double.Parse(_left.Evaluate()) + double.Parse(_right.Evaluate())).ToString();
         }
 
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the string of the addition of two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class AddNodeString : LeftRightNode
     {
         /// <summary>
@@ -183,31 +144,22 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public AddNodeString(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the string of the addition of two nodes.
         /// </summary>
         /// <returns> String of addition </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _left.Evaluate() + "+" + _right.Evaluate();
         }
 
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node that subtracts two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class SubtractNode : LeftRightNode
     {
         /// <summary>
@@ -216,30 +168,21 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public SubtractNode(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that return the integer subtraction of the two nodes.
         /// </summary>
         /// <returns> String of the integer subtraction. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
-            return (int.Parse(_left.Evaluate()) - int.Parse(_right.Evaluate())).ToString();
+            return (double.Parse(_left.Evaluate()) - double.Parse(_right.Evaluate())).ToString();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the string of the subtraction of two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class SubtractNodeString : LeftRightNode
     {
         /// <summary>
@@ -248,30 +191,21 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public SubtractNodeString(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the string of the subtraction of the two nodes.
         /// </summary>
         /// <returns> String of subtraction </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _left.Evaluate() + "-" + _right.Evaluate();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the multiplication of two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class MultiplyNode : LeftRightNode
     {
         /// <summary>
@@ -280,30 +214,21 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public MultiplyNode(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method for the integer multiplication of two nodes.
         /// </summary>
         /// <returns> String of the integer multiplication. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
-            return (int.Parse(_left.Evaluate()) * int.Parse(_right.Evaluate())).ToString();
+            return (double.Parse(_left.Evaluate()) * double.Parse(_right.Evaluate())).ToString();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the string of the multiplication of two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class MultiplyNodeString : LeftRightNode
     {
         /// <summary>
@@ -312,30 +237,21 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public MultiplyNodeString(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the string of the multiplication of two nodes.
         /// </summary>
         /// <returns> String of multiplication </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _left.Evaluate() + "*" + _right.Evaluate();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the division of two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class DivideNode : LeftRightNode
     {
         /// <summary>
@@ -344,30 +260,21 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public DivideNode(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method for the integer division of two nodes.
         /// </summary>
         /// <returns> String of the integer division. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
-            return (int.Parse(_left.Evaluate()) / int.Parse(_right.Evaluate())).ToString();
+            return (double.Parse(_left.Evaluate()) / double.Parse(_right.Evaluate())).ToString();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the string of the division of two nodes.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class DivideNodeString : LeftRightNode
     {
         /// <summary>
@@ -376,30 +283,21 @@ namespace Compiler
         /// <param name="left"></param>
         /// <param name="right"></param>
         public DivideNodeString(Node left, Node right) : base(left, right)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the string of the division of two nodes.
         /// </summary>
         /// <returns> String of division. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _left.Evaluate() + "/" + _right.Evaluate();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the negation of a node.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class NegateNode : NodeNode
     {
         /// <summary>
@@ -407,20 +305,15 @@ namespace Compiler
         /// </summary>
         /// <param name="node"></param>
         public NegateNode(Node node) : base(node)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the integer negation of a node.
         /// </summary>
         /// <returns> Negated node. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
-            return (-int.Parse(_node.Evaluate())).ToString();
+            return (- double.Parse(_node.Evaluate())).ToString();
         }
     }
 
@@ -434,30 +327,21 @@ namespace Compiler
         /// </summary>
         /// <param name="node"></param>
         public NegateNodeString(Node node) : base(node)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the string of the negation of the node.
         /// </summary>
         /// <returns> String of negation. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return "-" + _node.Evaluate();
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Calculator node for the string of a bracketed node.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class BracketNodeString : NodeNode
     {
         /// <summary>
@@ -465,32 +349,23 @@ namespace Compiler
         /// </summary>
         /// <param name="node"></param>
         public BracketNodeString(Node node) : base(node)
-<<<<<<< Updated upstream
         {}
         
         /// <summary>
         /// Evaluate method that returns the string of the bracketed node.
         /// </summary>
         /// <returns> Bracketed expression. </returns>
-=======
-        { }
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return "(" + _node.Evaluate() + ")";
         }
     }
-
+    
     // -------------------------------- Assignment Nodes
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Assignment node for the equals part of the expression.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class EqualNode : LeftRightNode
     {
         private readonly Token _nodeToken;
@@ -533,28 +408,20 @@ namespace Compiler
         {
             _left = left;
         }
-<<<<<<< Updated upstream
         
         /// <summary>
         /// Evaluate method that returns the left hand side of the assignment expression.
         /// </summary>
         /// <returns> Variable being assigned. </returns>
-=======
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _left.Evaluate() + _nodeToken.Content;
         }
     }
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Assignment node for the right hand side of the expression, concerning the content of the assignment.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class VariableNode : TokenNode
     {
         private readonly Node _right;
@@ -568,30 +435,22 @@ namespace Compiler
         {
             _right = right;
         }
-<<<<<<< Updated upstream
         
         /// <summary>
         /// Evaluate method that returns the right hand side of the assignment expression.
         /// </summary>
         /// <returns> Content of assignment. </returns>
-=======
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _nodeToken.Content + _right.Evaluate();
         }
     }
-
+    
     // -------------------------------- Statement Nodes
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Statement node for the content of the "scream" key word.
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class ScreamContentNode : LeftRightNode
     {
         private readonly Token _nodeToken;
@@ -606,30 +465,22 @@ namespace Compiler
         {
             _nodeToken = nodeToken;
         }
-<<<<<<< Updated upstream
         
         /// <summary>
         /// Evaluate method that returns the statement, it's content, and the EoL.
         /// </summary>
         /// <returns> Scream statement. </returns>
-=======
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _left.Evaluate() + _nodeToken.Content + _right.Evaluate();
         }
     }
-
+    
     // -------------------------------- Boolean Nodes
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Boolean node for the boolean expressions that contain multiple characters e.g. "==".
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class BoolStart : TokenNode
     {
         private readonly Node _right;
@@ -643,15 +494,11 @@ namespace Compiler
         {
             _right = right;
         }
-<<<<<<< Updated upstream
         
         /// <summary>
         /// Evaluate method that returns the multi-character boolean comparison.
         /// </summary>
         /// <returns> Boolean comparison. </returns>
-=======
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return _nodeToken.Content + _right.Evaluate();
@@ -675,30 +522,22 @@ namespace Compiler
         {
             _comparison = comparison;
         }
-<<<<<<< Updated upstream
         
         /// <summary>
         /// Evaluate method that returns the boolean expression in brackets.
         /// </summary>
         /// <returns> Boolean comparison expression. </returns>
-=======
-
->>>>>>> Stashed changes
         public override string Evaluate()
         {
             return "(" + _left.Evaluate() + _comparison.Evaluate() + _right.Evaluate() + ") {";
         }
     }
-
+    
     // -------------------------------- Selection Nodes
-<<<<<<< Updated upstream
     
     /// <summary>
     /// Selection node for the selection...
     /// </summary>
-=======
-
->>>>>>> Stashed changes
     public class SelectionNode : TokenNode
     {
         private readonly Node _right;
@@ -707,30 +546,88 @@ namespace Compiler
         {
             _right = right;
         }
-
+        
         public override string Evaluate()
         {
             return _nodeToken.Content + _right.Evaluate();
         }
     }
-
-    public class FunctionNode : Node
+    
+    // -------------------------------- Function Nodes
+    
+    public class FunctionNode : LeftRightNode
     {
         private readonly Token _functionName;
-        private readonly Function _table;
 
-        public FunctionNode(Token functionName, Function table)
+        public FunctionNode(Node left, Node right, Token functionName) : base(left, right)
         {
             _functionName = functionName;
-
-            _table = table;
         }
 
         public override string Evaluate()
         {
-            
-            return _table.Type.Content + _functionName.Content + "(" + _table.ToString();
+            return _left.Evaluate() + _functionName.Content + "(" + _right.Evaluate() + "){";
         }
     }
 
+    public class ParameterNode : NodeNode
+    {
+        private readonly Token _paramType;
+        private readonly Token _paramId;
+        
+        public ParameterNode(Token paramType, Token paramId, Node node) : base(node)
+        {
+            _paramType = paramType;
+            _paramId = paramId;
+        }
+        public override string Evaluate()
+        {
+            return _paramType.Content + _paramId.Content + ", " + _node.Evaluate();
+        }
+    }
+
+    public class FinalParameterNode : TokenNode
+    {
+        private readonly Token _paramId;
+        
+        public FinalParameterNode(Token paramType, Token paramId) : base(paramType)
+        {
+            _paramId = paramId;
+        }
+
+        public override string Evaluate()
+        {
+            return _nodeToken.Content + _paramId.Content;
+        }
+    }
+
+    public class FunctionCallNode : TokenNode
+    {
+        private readonly Node _params;
+        
+        public FunctionCallNode(Token nodeToken, Node param) : base(nodeToken)
+        {
+            _params = param;
+        }
+        
+        public override string Evaluate()
+        {
+            return _nodeToken.Content + "(" + _params.Evaluate() + ");";
+        }
+    }
+    
+    public class FunctionCallParameterNode : TokenNode
+    {
+        private readonly Node _params;
+        
+        public FunctionCallParameterNode(Token nodeToken, Node param) : base(nodeToken)
+        {
+            _params = param;
+        }
+        
+        public override string Evaluate()
+        {
+            return _nodeToken.Content + "," + _params.Evaluate();
+        }
+    }
 }

@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Selection.cs, Statement.cs  
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Boolean parse tree to parse boolean expressions, handling both integer and string comparisons.   
@@ -19,12 +19,8 @@ namespace GymBrah
     /// </summary>
     public class Boolean : Parse
     {
-<<<<<<< Updated upstream
-        public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable) : base(tokens, ref variableTable)
-=======
-        private TokenType _comparisonType;
-        public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable, ref functions)
->>>>>>> Stashed changes
+        public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable) : 
+            base(tokens, ref variableTable, ref functionTable)
         {}
         
         /// <summary>
@@ -198,8 +194,8 @@ namespace GymBrah
                     exprTwo.Add(new Token(TokenType.EoL, ";"));
                     
                     return new BoolComparisonNode(
-                        new Calculator(exprOne, ref VariableTable,ref Functions, false).ParseTree(), 
-                        new Calculator(exprTwo, ref VariableTable,ref Functions, false).ParseTree(), 
+                        new Calculator(exprOne, ref VariableTable, ref FunctionTable, false).ParseTree(), 
+                        new Calculator(exprTwo, ref VariableTable, ref FunctionTable, false).ParseTree(), 
                         nodeOne);
                 }
                 ScanToken();

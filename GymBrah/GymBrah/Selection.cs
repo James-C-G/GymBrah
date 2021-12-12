@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Selection.cs, Statement.cs  
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Selection parse tree to parse basic selection using boolean expressions.
@@ -16,7 +16,8 @@ namespace GymBrah
 {
     public class Selection : Parse
     {
-        public Selection(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable, ref functions)
+        public Selection(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable) : 
+            base(tokens, ref variableTable, ref functionTable)
         {}
 
         private List<Token> _parseB()
@@ -67,10 +68,9 @@ namespace GymBrah
                     Token cur = ScanToken();
                     List<Token> nodeTwo = _parseB();
 
-
                     nodeOne.AddRange(nodeTwo);
                     
-                    return new SelectionNode(cur, new Boolean(nodeOne, ref VariableTable,ref Functions).ParseTree());
+                    return new SelectionNode(cur, new Boolean(nodeOne, ref VariableTable, ref FunctionTable).ParseTree());
                 }
                 default:
                 {
@@ -78,20 +78,5 @@ namespace GymBrah
                 }
             }
         }
-<<<<<<< Updated upstream
-=======
-
-        //TODO This needs to have its own scope i.e its own variable table
-
-/*        public static void Main()
-        {
-            Dictionary<String, Value> var = new Dictionary<String, Value>();
-            var.Add("x", new IntegerValue("2"));
-
-            Lexer lexer = new Lexer("x is == 8 lightweight");
-            Selection x = new Selection(lexer.Tokens, ref var);
-            Console.Out.WriteLine(x.ParseTree().Evaluate());
-        }*/
->>>>>>> Stashed changes
     }
 }

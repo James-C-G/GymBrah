@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Selection.cs, Statement.cs  
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Class to wrap around the whole parser and create the individual trees for parsing of the program and
@@ -11,6 +11,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 using Compiler;
 using Tokenizer;
@@ -23,20 +24,16 @@ namespace GymBrah
     public class GymBrah
     {
         private readonly string _path;
-        private Dictionary<String, FunctionTable> _functionTable;
         private Dictionary<String, Value> _variableTable;
+        private Dictionary<String, Function> _functionTable;
         private Lexer _lexer;
         private List<List<Token>> _lines;
-<<<<<<< Updated upstream
-        private StringBuilder _outString = new StringBuilder();
+        private readonly StringBuilder _outString = new StringBuilder();
         
         /// <summary>
         /// Constructor to initialise the path to the text file.
         /// </summary>
         /// <param name="path"> Text file to parse. </param>
-=======
-
->>>>>>> Stashed changes
         public GymBrah(string path)
         {
             _path = path;
@@ -51,14 +48,10 @@ namespace GymBrah
         {
             _lines = lines;
         }
-<<<<<<< Updated upstream
         
         /// <summary>
         /// Split the list of tokens into individual lines.
         /// </summary>
-=======
-
->>>>>>> Stashed changes
         private void _getLines()
         {
             List<Token> temp = new List<Token>();
@@ -70,17 +63,17 @@ namespace GymBrah
                     case TokenType.LightWeight:
                     case TokenType.Baby:
                     case TokenType.EoL:
-                        {
-                            temp.Add(i);
-                            _lines.Add(temp);
-                            temp = new List<Token>();
-                            break;
-                        }
+                    {
+                        temp.Add(i);
+                        _lines.Add(temp);
+                        temp = new List<Token>();
+                        break;
+                    }
                     default:
-                        {
-                            temp.Add(i);
-                            break;
-                        }
+                    {
+                        temp.Add(i);
+                        break;
+                    }
                 }
             }
         }
@@ -93,16 +86,14 @@ namespace GymBrah
         {
             try
             {
-                _variableTable = new Table().VariableTable;
                 _lexer = new Lexer(new StreamReader(_path));
                 _lines = new List<List<Token>>();
                 _getLines();
             }
             catch (Exception e)
             {
-                throw new Exception("Syntax error: " + e.Message);
+                throw new Exception("Error: Syntax error " + e.Message);
             }
-<<<<<<< Updated upstream
         }
         
         //TODO When parsing a function, create new gymbrah object with remaining tokens up til "}"
@@ -113,8 +104,12 @@ namespace GymBrah
         /// </summary>
         /// <returns> String of parsed text. </returns>
         /// <exception cref="Exception"> Errors in parsing and lexing. </exception>
-        public string Parse()
+        public string Parse(bool parse = true)
         {
+            // Initialise tables
+            _variableTable = new Table().VariableTable;
+            _functionTable = new Table().FunctionTable;
+            
             // Perform lexing, if necessary, and catch any errors
             if (_lines == null)
             {
@@ -133,36 +128,28 @@ namespace GymBrah
 
             int counter = 0;
             Parse tree;
-            
-            _outString.AppendLine("int main()\n{");
+
+            //TODO Catch errors with hacks e.g. int x = 3? 3, int main(int x){, int y){
             
             // Catch any parse errors.
-=======
-
-            int counter = 0;
-            Parse tree;
-
-            Console.Out.WriteLine("#include <stdio.h>\nint main()\n{");
-
->>>>>>> Stashed changes
             try
             {
-                foreach (var i in _lines)
+                for (int i = 0; i < _lines.Count; i++)
                 {
+                    List<Token> currentLine = _lines[i];
                     counter++; //TODO Maybe not use
                     
                     // Different type of line start
-                    switch (i[0].Type) 
+                    switch (currentLine[0].Type) 
                     {
-<<<<<<< Updated upstream
                         case TokenType.Can: // Assignment
                         {
-                            tree = new Assignment(i, ref _variableTable);
+                            tree = new Assignment(currentLine, ref _variableTable, ref _functionTable, parse);
                             break;
                         }
                         case TokenType.Scream: // Statement
                         {
-                            tree = new Statement(i, ref _variableTable);
+                            tree = new Statement(currentLine, ref _variableTable, ref _functionTable, parse);
                             break;
                         }
                         case TokenType.Baby: // End of brackets
@@ -170,60 +157,76 @@ namespace GymBrah
                             _outString.AppendLine("}\n");
                             continue;
                         }
+                        case TokenType.BroSplit: // Function definition
+                        {
+                            // TODO Catch return type
+                            tree = new Functions(currentLine, ref _variableTable, ref _functionTable, parse);
+
+                            int bracket = 0;
+                            int j = i;
+                                
+                            for (; j < _lines.Count; j++)
+                            {
+                                if (_lines[j].Last().Type == TokenType.LightWeight)
+                                {
+                                    bracket++;
+                                }
+                                if (_lines[j][0].Type == TokenType.Baby)
+                                {
+                                    bracket--;
+
+                                    if (bracket < 0)
+                                    {
+                                        throw new Exception("Braces not closed properly.");
+                                    }
+                                    if (bracket == 0)
+                                    {
+                                        _outString.AppendLine(tree.ParseTree().Evaluate());
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - 1)).Parse();
+                                        
+                                        if (scope.Split('\n').Last().Contains("Error"))
+                                            throw new Exception(scope.Split('\n').Last().Split(':')[1]);
+                                        
+                                        _outString.Append(scope);
+                                        
+                                        i += j - 1;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (bracket != 0) throw new Exception("Braces not closed properly.");
+                            
+                            continue;
+                        }
                         case TokenType.DropSet: // Repetition
                         {
-                            tree = new Repetition(i, ref _variableTable); //TODO False parseMaths
-                            // Gymbrah...
-                            counter += 2;
+                            tree = new Repetition(currentLine, ref _variableTable, ref _functionTable);
                             break;
                         }
                         case TokenType.Id: // Selection
+                        {
+                            // If in function table, function call, else selection
+                            if (_functionTable.TryGetValue(currentLine[0].Content, out Function result))
+                            {
+                                tree = new Functions(currentLine, ref _variableTable, ref _functionTable, parse);
+                                break;
+                            }
+                            
+                            goto case TokenType.String;
+                        }
                         case TokenType.Integer:
+                        case TokenType.Double:
                         case TokenType.String:
                         {
-                            tree = new Selection(i, ref _variableTable);
+                            tree = new Selection(currentLine, ref _variableTable, ref _functionTable);
                             counter += 2;
                             break;
                         }
-=======
-                        case TokenType.Can:
-                            {
-                                tree = new Assignment(i, ref _variableTable,ref _functionTable);
-                                break;
-                            }
-                        case TokenType.Brosplit:
-                            {
-                                tree = new Functions(i, ref  _variableTable, ref _functionTable);
-                                break;
-                            }
-                        case TokenType.Scream:
-                            {
-                                tree = new Statement(i, ref _variableTable, ref _functionTable);
-                                break;
-                            }
-                        case TokenType.Baby:
-                            {
-                                Console.Out.WriteLine("}");
-                                continue;
-                            }
-                        case TokenType.DropSet:
-                            {
-                                tree = new Repetition(i, ref _variableTable, ref _functionTable);
-                                counter++;
-                                break;
-                            }
-                        case TokenType.Id:
-                        case TokenType.Integer:
-                            {
-                                tree = new Selection(i, ref _variableTable, ref _functionTable);
-                                counter++;
-                                break;
-                            }
->>>>>>> Stashed changes
                         default:
-                            {
-                                throw new Exception("Invalid statement.");
-                            }
+                        {
+                            throw new Exception("Error: Invalid statement.");
+                        }
                     }
                     
                     _outString.AppendLine(tree.ParseTree().Evaluate());
@@ -234,20 +237,8 @@ namespace GymBrah
                 _outString.Append("Error on line " + counter + ": " + e.Message);
                 return _outString.ToString();
             }
-
-<<<<<<< Updated upstream
-            _outString.AppendLine("}");
+            
             return _outString.ToString();
         }
-=======
-
-            //TODO Case "3 plates 3" - doesnt do anything
-            //TODO Force plates to be last thing, if used
-
-
-            Console.Out.WriteLine("}");
-        }
-
->>>>>>> Stashed changes
     }
 }

@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Selection.cs, Statement.cs 
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Repetition parse tree to parse the while loops using boolean expressions.
@@ -16,18 +16,19 @@ namespace GymBrah
 {
     public class Repetition : Parse
     {
-        public Repetition(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, FunctionTable> functions) : base(tokens, ref variableTable,ref functions)
+        public Repetition(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable) : 
+            base(tokens, ref variableTable, ref functionTable)
         {}
 
         public override Node ParseTree()
         {
             switch (CurrentToken.Type)
             {
-                case TokenType.Brosplit:
+                case TokenType.DropSet:
                 {
                     Token cur = ScanToken();
 
-                        return null;
+                    return new SelectionNode(cur, new Boolean(GetRemainingTokens(), ref VariableTable, ref FunctionTable).ParseTree());
                 }
                 default:
                 {

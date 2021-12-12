@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Selection.cs, Statement.cs  
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Entry class for the running of the parser from an exe. The program takes two types of command line
@@ -21,8 +21,7 @@ namespace GymBrah
         static void Main(string[] args)
         {
             // TODO Check that arg paths exist
-            // TODO Handle empty files/incorrect text
-
+        
             if (args.Length == 1) 
             {
                 if (args[0].Substring(args[0].Length - 3) == "txt") // Ensure text file input
