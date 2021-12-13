@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
- *                  Selection.cs, Statement.cs  
+ *                  Return.cs, Selection.cs, Statement.cs 
  * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Class to wrap around the whole parser and create the individual trees for parsing of the program and
@@ -85,6 +85,9 @@ namespace GymBrah
                     }
                 }
             }
+
+            // Catch invalid code
+            if (temp.Count != 0 && temp.Last().Type != TokenType.EoL) throw new Exception("Unrecognised statement.");
         }
 
         /// <summary>
@@ -141,7 +144,7 @@ namespace GymBrah
                             tree = new Statement(currentLine, ref _variableTable, ref _functionTable, parse);
                             break;
                         }
-                        case TokenType.Yeet:
+                        case TokenType.Gain:
                         {
                             tree = new Return(currentLine, ref _variableTable, ref _functionTable, functionType, parse);
                             break;
@@ -150,39 +153,41 @@ namespace GymBrah
                         {
                             throw new Exception("Bracket cannot be closed if not opened.");
                         }
-                        case TokenType.BroSplit: // Function definition
+                        case TokenType.Workout: // Function definition
                         {
-                            // TODO Catch return type
                             tree = new Functions(currentLine, ref _variableTable, ref _functionTable, parse);
-
+                            _outString.AppendLine(tree.ParseTree().Evaluate()); 
+                            
                             int bracket = 0;
                             int j = i;
                                 
+                            // Read until proper bracket close - ignoring others
                             for (; j < _lines.Count; j++)
                             {
                                 if (_lines[j].Last().Type == TokenType.LightWeight)
                                 {
-                                    bracket++;
+                                    bracket++; // Bracket open
                                 }
                                 if (_lines[j][0].Type == TokenType.Baby)
                                 {
-                                    bracket--;
+                                    bracket--; // Bracket close
 
-                                    if (bracket < 0)
+                                    if (bracket < 0) // Bracket error
                                     {
                                         throw new Exception("Braces not closed properly.");
                                     }
-                                    if (bracket == 0)
+                                    if (bracket == 0) // Brackets closed properly
                                     {
-                                        _outString.AppendLine(tree.ParseTree().Evaluate());
-
+                                        // Ensure function is valid
                                         if (!_functionTable.TryGetValue(currentLine[2].Content, out Function function))
                                         {
                                             throw new Exception("Function is not defined.");
                                         }
                                         
+                                        // Generate scope
                                         Dictionary<String, Value> scopeTable = new Table().VariableTable;
                                         
+                                        // Fill scope with function parameters
                                         foreach (var param in function.Parameters)
                                         {
                                             switch (param.VariableType.Type)
@@ -209,8 +214,10 @@ namespace GymBrah
                                             }
                                         }
                                         
+                                        // Parse function code
                                         string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref scopeTable, ref _functionTable).Parse(ref counter, false, function.Type);
                                         
+                                        // Catch passed errors
                                         if (scope.Split('\n').Last().Contains("Error"))
                                             throw new Exception(scope.Split('\n').Last().Split(':')[1]);
                                         
@@ -219,7 +226,7 @@ namespace GymBrah
                                         
                                         counter++;
                                         
-                                        i = j;
+                                        i = j; // Maintain current line
                                         break;
                                     }
                                 }
@@ -232,29 +239,32 @@ namespace GymBrah
                         case TokenType.DropSet: // Repetition
                         {
                             tree = new Repetition(currentLine, ref _variableTable, ref _functionTable);
+                            _outString.AppendLine(tree.ParseTree().Evaluate());
                             
                             int bracket = 0;
                             int j = i;
                                 
+                            // Read until proper bracket close
                             for (; j < _lines.Count; j++)
                             {
                                 if (_lines[j].Last().Type == TokenType.LightWeight)
                                 {
-                                    bracket++;
+                                    bracket++; // Bracket open
                                 }
                                 if (_lines[j][0].Type == TokenType.Baby)
                                 {
-                                    bracket--;
+                                    bracket--; // Bracket close
 
-                                    if (bracket < 0)
+                                    if (bracket < 0) // Bracket error
                                     {
                                         throw new Exception("Braces not closed properly.");
                                     }
-                                    if (bracket == 0)
+                                    if (bracket == 0) // Brackets closed properly
                                     {
-                                        _outString.AppendLine(tree.ParseTree().Evaluate());
+                                        // Generate repetition scope
                                         string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse( ref counter, false);
                                         
+                                        // Catch passed errors
                                         if (scope.Split('\n').Last().Contains("Error"))
                                             throw new Exception(scope.Split('\n').Last().Split(':')[1]);
                                         
@@ -263,7 +273,7 @@ namespace GymBrah
                                         
                                         counter++;
                                         
-                                        i = j;
+                                        i = j; // Maintain current line
                                         break;
                                     }
                                 }
@@ -289,29 +299,32 @@ namespace GymBrah
                         case TokenType.String:
                         {
                             tree = new Selection(currentLine, ref _variableTable, ref _functionTable);
+                            _outString.AppendLine(tree.ParseTree().Evaluate());
                             
                             int bracket = 0;
                             int j = i;
                                 
+                            // Read until proper bracket is closed
                             for (; j < _lines.Count; j++)
                             {
                                 if (_lines[j].Last().Type == TokenType.LightWeight)
                                 {
-                                    bracket++;
+                                    bracket++; // Bracket open
                                 }
                                 if (_lines[j][0].Type == TokenType.Baby)
                                 {
-                                    bracket--;
+                                    bracket--; // Bracket close
 
-                                    if (bracket < 0)
+                                    if (bracket < 0) // Bracket error
                                     {
                                         throw new Exception("Braces not closed properly.");
                                     }
-                                    if (bracket == 0)
+                                    if (bracket == 0) // Brackets closed properly
                                     {
-                                        _outString.AppendLine(tree.ParseTree().Evaluate());
-                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse( ref counter, false);
+                                        // Generate selection scope
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse(ref counter, parse);
                                         
+                                        // Catch passed error
                                         if (scope.Split('\n').Last().Contains("Error"))
                                             throw new Exception(scope.Split('\n').Last().Split(':')[1]);
                                         
@@ -320,7 +333,7 @@ namespace GymBrah
                                         
                                         counter++;
                                         
-                                        i = j;
+                                        i = j; // Maintain current line
                                         break;
                                     }
                                 }
@@ -332,6 +345,7 @@ namespace GymBrah
                         }
                         default:
                         {
+                            // Unrecognised statement
                             throw new Exception("Invalid statement.");
                         }
                     }
@@ -342,10 +356,13 @@ namespace GymBrah
             catch (Exception e)
             {
                 string output = e.Message;
+                
+                // Avoid nested errors
                 if (output.Contains("Error: On line " + counter + " - "))
                 {
                     output = output.Replace("Error: On line " + counter + " - ", "");
                 }
+                
                 throw new Exception("Error: On line " + counter + " - " + output);
             }
             

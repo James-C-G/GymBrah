@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
- *                  Selection.cs, Statement.cs 
+ *                  Return.cs, Selection.cs, Statement.cs
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Calculator parse tree that parses mathematical expressions. Returns a parse tree of of either
@@ -30,6 +30,7 @@ namespace GymBrah
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="variableTable"></param>
+        /// <param name="functionTable"></param>
         /// <param name="parseMaths"> Boolean for type of evaluation. </param>
         public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable, bool parseMaths = true) : 
             base(tokens, ref variableTable, ref functionTable)

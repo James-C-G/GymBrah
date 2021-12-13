@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
- *                  Selection.cs, Statement.cs  
+ *                  Return.cs, Selection.cs, Statement.cs  
  * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Assignment parse tree that parses assignment expressions for string, integers, and doubles.
@@ -29,6 +29,7 @@ namespace GymBrah
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="variableTable"></param>
+        /// <param name="functionTable"></param>
         /// <param name="evaluate"> Boolean for type of evaluation. </param>
         public Assignment(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable, bool evaluate = true) : 
             base(tokens, ref variableTable, ref functionTable)
@@ -135,8 +136,6 @@ namespace GymBrah
         /// <exception cref="Exception"> Errors in assignment. </exception>
         private Node _parseRight()
         {
-            TokenType idType = TokenType.Illegal;
-            
             switch (CurrentToken.Type)
             {
                 case TokenType.Id: // If being assigned to an identifier e.g. int x = y;
@@ -153,12 +152,10 @@ namespace GymBrah
                         }
                         if (result.Type == TokenType.Integer) // Handle integers
                         {
-                            idType = TokenType.Integer;
                             goto case TokenType.Integer;
                         }
                         if (result.Type == TokenType.Double) // Handle doubles
                         {
-                            idType = TokenType.Double;
                             goto case TokenType.Double;
                         }
                         if (result.Type == TokenType.String) // Handle strings
@@ -171,6 +168,7 @@ namespace GymBrah
                     if (FunctionTable.TryGetValue(CurrentToken.Content, out Function function)) // If function assignment
                     {
                         TokenType returnVal;
+                        
                         // Check function type is being maintained in assignment
                         switch (_assignmentType)
                         {
@@ -180,6 +178,7 @@ namespace GymBrah
                                 {
                                     returnVal = TokenType.Integer;
                                     
+                                    // Store variable
                                     if (!VariableTable.TryAdd(_variableName, new IntegerValue("function")))
                                     {
                                         VariableTable[_variableName] = new IntegerValue("function");
@@ -195,6 +194,7 @@ namespace GymBrah
                                 {
                                     returnVal = TokenType.String;
                                     
+                                    // Store variable
                                     if (!VariableTable.TryAdd(_variableName, new StringValue("function")))
                                     {
                                         VariableTable[_variableName] = new StringValue("function");
@@ -210,6 +210,7 @@ namespace GymBrah
                                 {
                                     returnVal = TokenType.Double;
                                     
+                                    // Store variable
                                     if (!VariableTable.TryAdd(_variableName, new DoubleValue("function")))
                                     {
                                         VariableTable[_variableName] = new DoubleValue("function");
@@ -225,20 +226,14 @@ namespace GymBrah
                             }
                         }
 
+                        // Variable assignment 
                         return new TerminalNode(new Token(returnVal, new Functions(GetRemainingTokens(), ref VariableTable, ref FunctionTable).ParseTree().Evaluate()));
                     }
                     
                     throw new Exception("Variable is being assigned to something undefined.");
                 }
                 case TokenType.Double: // Calculate expression
-                case TokenType.Integer:
                 {
-                    // Ensure assignment type and double can store an integer still
-                    if (CurrentToken.Type != _assignmentType && _assignmentType != TokenType.Double && CurrentToken.Type != TokenType.Id) 
-                    {
-                        throw new Exception("Incorrect integer assignment type.");
-                    }
-                    
                     List<Token> calcTokens = GetRemainingTokens(); // Get tokens for calculation
                     
                     // Put brackets around entire expression
@@ -247,34 +242,28 @@ namespace GymBrah
 
                     string calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, _evaluate).ParseTree().Evaluate();
 
-                    if (idType == TokenType.Illegal)
-                    {
-                        if (CurrentToken.Type == TokenType.Integer) // Store integer
-                        {
-                            if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
-                                VariableTable[_variableName] = new IntegerValue(calculation);
-                        }
-                        else // Store double
-                        {
-                            if (!VariableTable.TryAdd(_variableName, new DoubleValue(calculation)))
-                                VariableTable[_variableName] = new DoubleValue(calculation);
-                        }
-                    }
-                    else
-                    {
-                        if (idType == TokenType.Integer) // Store integer
-                        {
-                            if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
-                                VariableTable[_variableName] = new IntegerValue(calculation);
-                        }
-                        else // Store double
-                        {
-                            if (!VariableTable.TryAdd(_variableName, new DoubleValue(calculation)))
-                                VariableTable[_variableName] = new DoubleValue(calculation);
-                        }
-                    }
+                    if (!VariableTable.TryAdd(_variableName, new DoubleValue(calculation))) 
+                        VariableTable[_variableName] = new DoubleValue(calculation);
+
+                    // If expression is being string evaluated
+                    if (!_evaluate) calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, false).ParseTree().Evaluate();
                     
+                    return new VariableNode(new Token(CurrentToken.Type, calculation), 
+                        new TerminalNode(new Token(TokenType.EoL, ";")));
+                }
+                case TokenType.Integer:
+                {
+                    List<Token> calcTokens = GetRemainingTokens(); // Get tokens for calculation
                     
+                    // Put brackets around entire expression
+                    calcTokens.Insert(0, new Token(TokenType.OpenBracket, "("));
+                    calcTokens.Insert(calcTokens.Count - 1, new Token(TokenType.CloseBracket, ")"));
+
+                    string calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, _evaluate).ParseTree().Evaluate();
+
+                    if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
+                        VariableTable[_variableName] = new IntegerValue(calculation);
+
                     // If expression is being string evaluated
                     if (!_evaluate) calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, false).ParseTree().Evaluate();
                     

@@ -9,7 +9,6 @@
  */
 
 // TODO Left, Right == null for terminal, content made generic
-// TODO Maybe rephrase integer to value?
 
 using Tokenizer;
 
@@ -533,20 +532,29 @@ namespace Compiler
         }
     }
     
-    // -------------------------------- Selection Nodes
+    // -------------------------------- Selection & Repetition Nodes
     
     /// <summary>
-    /// Selection node for the selection...
+    /// Selection node for the selection and repetition parse trees.
     /// </summary>
     public class SelectionNode : TokenNode
     {
         private readonly Node _right;
 
+        /// <summary>
+        /// Inherited constructor plus a node link to the boolean node (right).
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="right"> Boolean expression node. </param>
         public SelectionNode(Token token, Node right) : base(token)
         {
             _right = right;
         }
         
+        /// <summary>
+        /// Evaluate method to return the parsed expression for selection and repetition.
+        /// </summary>
+        /// <returns> Parsed expression. </returns>
         public override string Evaluate()
         {
             return _nodeToken.Content + _right.Evaluate();
@@ -555,76 +563,139 @@ namespace Compiler
     
     // -------------------------------- Function Nodes
     
+    /// <summary>
+    /// Function node for the root of the parse tree.
+    /// </summary>
     public class FunctionNode : LeftRightNode
     {
         private readonly Token _functionName;
 
+        /// <summary>
+        /// Inherited constructor and a token for the root node.
+        /// </summary>
+        /// <param name="left"></param>
+        /// <param name="right"></param>
+        /// <param name="functionName"> Name of function. </param>
         public FunctionNode(Node left, Node right, Token functionName) : base(left, right)
         {
             _functionName = functionName;
         }
 
+        /// <summary>
+        /// Evaluate method that returns the completed function definition.
+        /// </summary>
+        /// <returns> Function definition. </returns>
         public override string Evaluate()
         {
             return _left.Evaluate() + _functionName.Content + "(" + _right.Evaluate() + "){";
         }
     }
 
+    /// <summary>
+    /// Parameter node that links a parameter in the function definition to the next.
+    /// </summary>
     public class ParameterNode : NodeNode
     {
         private readonly Token _paramType;
         private readonly Token _paramId;
         
+        /// <summary>
+        /// Inherited constructor with additional tokens for the parameters type and identifier.
+        /// </summary>
+        /// <param name="paramType"> Parameter data type. </param>
+        /// <param name="paramId"> Parameter variable name. </param>
+        /// <param name="node"></param>
         public ParameterNode(Token paramType, Token paramId, Node node) : base(node)
         {
             _paramType = paramType;
             _paramId = paramId;
         }
+        
+        /// <summary>
+        /// Evaluate method to return the list of parameters in the function definition.
+        /// </summary>
+        /// <returns> Listed parameters. </returns>
         public override string Evaluate()
         {
             return _paramType.Content + _paramId.Content + ", " + _node.Evaluate();
         }
     }
 
+    /// <summary>
+    /// Parameter node for the final (or only) parameter in a function definition.
+    /// </summary>
     public class FinalParameterNode : TokenNode
     {
         private readonly Token _paramId;
         
+        /// <summary>
+        /// Inherited constructor with additional token for parameter identifier.
+        /// </summary>
+        /// <param name="paramType"> Parameter data type.</param>
+        /// <param name="paramId"> Parameter identifier. </param>
         public FinalParameterNode(Token paramType, Token paramId) : base(paramType)
         {
             _paramId = paramId;
         }
 
+        /// <summary>
+        /// Evaluate method that returns a single parameter definition.
+        /// </summary>
+        /// <returns> Parameter definition. </returns>
         public override string Evaluate()
         {
             return _nodeToken.Content + _paramId.Content;
         }
     }
 
+    /// <summary>
+    /// Function method root node for when a function is being called.
+    /// </summary>
     public class FunctionCallNode : TokenNode
     {
         private readonly Node _params;
         
+        /// <summary>
+        /// Inherited constructor with link to the parameters in function call.
+        /// </summary>
+        /// <param name="nodeToken"></param>
+        /// <param name="param"> Parameters. </param>
         public FunctionCallNode(Token nodeToken, Node param) : base(nodeToken)
         {
             _params = param;
         }
         
+        /// <summary>
+        /// Evaluate method to return the function call parse tree.
+        /// </summary>
+        /// <returns> Function call. </returns>
         public override string Evaluate()
         {
             return _nodeToken.Content + "(" + _params.Evaluate() + ");";
         }
     }
     
+    /// <summary>
+    /// Function method for the parameters being passed in the function call.
+    /// </summary>
     public class FunctionCallParameterNode : TokenNode
     {
         private readonly Node _params;
         
+        /// <summary>
+        /// Inherited constructor with additional node to parameters in function call.
+        /// </summary>
+        /// <param name="nodeToken"></param>
+        /// <param name="param"> Parameters. </param>
         public FunctionCallParameterNode(Token nodeToken, Node param) : base(nodeToken)
         {
             _params = param;
         }
         
+        /// <summary>
+        /// Evaluate method for the parameters in function call.
+        /// </summary>
+        /// <returns> Parameters. </returns>
         public override string Evaluate()
         {
             return _nodeToken.Content + "," + _params.Evaluate();
@@ -633,15 +704,27 @@ namespace Compiler
     
     // -------------------------------- Return Nodes
 
+    /// <summary>
+    /// Return node for the return keyword and the value being returned.
+    /// </summary>
     public class ReturnNode : TokenNode
     {
         private readonly Node _returnVal;
         
+        /// <summary>
+        /// Inherited constructor with link to return value node.
+        /// </summary>
+        /// <param name="nodeToken"></param>
+        /// <param name="returnVal"> Return value node. </param>
         public ReturnNode(Token nodeToken, Node returnVal) : base(nodeToken)
         {
             _returnVal = returnVal;
         }
         
+        /// <summary>
+        /// Evaluate method to generate the return expression.
+        /// </summary>
+        /// <returns> Return expression. </returns>
         public override string Evaluate()
         {
             return _nodeToken.Content + _returnVal.Evaluate() + ";";

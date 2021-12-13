@@ -27,12 +27,12 @@ namespace Tokenizer
         Can,            // =
         
         Plates,         // ( var * 40) + 20
-        BroSplit,       // Function definition
+        Workout,        // Function definition
         
         Scream,         // Printf("")
         Is,             // If
         DropSet,        // While
-        Yeet,           // return
+        Gain,           // return
         
         OpenBracket,    // (    
         CloseBracket,   // )
@@ -75,8 +75,8 @@ namespace Tokenizer
             {"is", TokenType.Is},
             {"dropset", TokenType.DropSet},
             {"deadlift", TokenType.DeadLift},
-            {"brosplit", TokenType.BroSplit},
-            {"yeet", TokenType.Yeet}
+            {"workout", TokenType.Workout},
+            {"gain", TokenType.Gain}
         };
     }
 

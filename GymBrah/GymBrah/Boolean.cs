@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
- *                  Selection.cs, Statement.cs  
+ *                  Return.cs, Selection.cs, Statement.cs
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Boolean parse tree to parse boolean expressions, handling both integer and string comparisons.   
@@ -19,9 +19,14 @@ namespace GymBrah
     /// </summary>
     public class Boolean : Parse
     {
-        public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable) : 
+        private readonly bool _evaluate;    // Boolean of whether to evaluate
+
+        public Boolean(List<Token> tokens, ref Dictionary<String, Value> variableTable,
+            ref Dictionary<String, Function> functionTable, bool evaluate = true) :
             base(tokens, ref variableTable, ref functionTable)
-        {}
+        {
+            _evaluate = evaluate;
+        }
         
         /// <summary>
         /// Parse method to get second part of a boolean expression (e.g. ==, !=) - if there is one - otherwise return
@@ -145,7 +150,7 @@ namespace GymBrah
                             // If identifier ensure it exists
                             if (VariableTable.TryGetValue(exprOne[0].Content, out Value result))
                             {
-                                exprOneType = (TokenType)result.Type;
+                                exprOneType = result.Type;
                             }
                             else
                             {
@@ -163,7 +168,7 @@ namespace GymBrah
                             // If identifier ensure it exists
                             if (VariableTable.TryGetValue(exprTwo[0].Content, out Value result))
                             {
-                                exprTwoType = (TokenType)result.Type;
+                                exprTwoType = result.Type;
                             }
                             else
                             {
@@ -194,8 +199,8 @@ namespace GymBrah
                     exprTwo.Add(new Token(TokenType.EoL, ";"));
                     
                     return new BoolComparisonNode(
-                        new Calculator(exprOne, ref VariableTable, ref FunctionTable, false).ParseTree(), 
-                        new Calculator(exprTwo, ref VariableTable, ref FunctionTable, false).ParseTree(), 
+                        new Calculator(exprOne, ref VariableTable, ref FunctionTable, _evaluate).ParseTree(), 
+                        new Calculator(exprTwo, ref VariableTable, ref FunctionTable, _evaluate).ParseTree(), 
                         nodeOne);
                 }
                 ScanToken();

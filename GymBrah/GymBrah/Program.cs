@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
- *                  Selection.cs, Statement.cs  
+ *                  Return.cs, Selection.cs, Statement.cs  
  * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Entry class for the running of the parser from an exe. The program takes two types of command line
@@ -41,7 +41,7 @@ namespace GymBrah
                     }
                     catch (Exception e)
                     {
-                        Console.WriteLine(e.Message);
+                        Console.Write(e.Message);
                     }
                 }
                 else if (args[0].Substring(args[0].Length - 1) == "c") // C file input

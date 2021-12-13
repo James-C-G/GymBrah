@@ -1,8 +1,8 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
- *                  Selection.cs, Statement.cs  
- * Last Modified :  10/12/21
+ *                  Return.cs, Selection.cs, Statement.cs  
+ * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Statement parse tree to parse basic statements.
  */
@@ -21,6 +21,13 @@ namespace GymBrah
     {
         private bool _evaluate; // Bool to describe whether identifiers should be evaluated or not
 
+        /// <summary>
+        /// Inherited constructor with evaluate boolean for whether or not to compile variables.
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <param name="variableTable"></param>
+        /// <param name="functionTable"></param>
+        /// <param name="evaluate"> Evaluate boolean. </param>
         public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable, bool evaluate = true) : 
             base(tokens, ref variableTable, ref functionTable)
         {
@@ -81,25 +88,25 @@ namespace GymBrah
                     if (VariableTable.TryGetValue(curToken.Content, out Value result))
                     {
                         if (result.Content == "function") _evaluate = false;
-                        
+
                         switch(result.Type)
                         {
                             case TokenType.String: // If string use %s
                             {
                                 if (!_evaluate) curToken.Content = "\"%s\"," + curToken.Content + ")";
-                                else curToken = new Token(TokenType.String, ((StringValue) result).Content + ")");
+                                else curToken = new Token(TokenType.String, "\"%s\"," + ((StringValue) result).Content + ")");
                                 break;
                             }
                             case TokenType.Integer: // If integer use %d
                             {
                                 if (!_evaluate) curToken.Content = "\"%d\"," + curToken.Content + ")";
-                                else curToken = new Token(TokenType.String, "\"" + ((IntegerValue) result).Content + "\")");
+                                else curToken = new Token(TokenType.String, "\"%d\"," + ((IntegerValue) result).Content + ")");
                                 break;
                             }
                             case TokenType.Double: // If double use %f
                             {
                                 if (!_evaluate) curToken.Content = "\"%f\"," + curToken.Content + ")";
-                                else curToken = new Token(TokenType.String, "\"" + ((DoubleValue) result).Content + "\")");
+                                else curToken = new Token(TokenType.String, "\"%f\"," + ((DoubleValue) result).Content + ")");
                                 break;
                             }
                             default:
@@ -108,6 +115,7 @@ namespace GymBrah
                             }
                         }
                         
+                        // Statement parse tree
                         return new ScreamContentNode(nodeOne, _parseB(), curToken);
                     }
 
