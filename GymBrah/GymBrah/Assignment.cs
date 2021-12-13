@@ -22,7 +22,7 @@ namespace GymBrah
     {
         private TokenType _assignmentType;  // Type of assignment to ensure both sides of the assignment are the same
         private string _variableName;       // Name of variable being assigned
-        private readonly bool _evaluate;    // Boolean of whether to evaluate the mathematical expressions
+        private bool _evaluate;    // Boolean of whether to evaluate the mathematical expressions
 
         /// <summary>
         /// Inherited constructor and a boolean for either the string or integer evaluation.
@@ -135,6 +135,8 @@ namespace GymBrah
         /// <exception cref="Exception"> Errors in assignment. </exception>
         private Node _parseRight()
         {
+            TokenType idType = TokenType.Illegal;
+            
             switch (CurrentToken.Type)
             {
                 case TokenType.Id: // If being assigned to an identifier e.g. int x = y;
@@ -151,10 +153,12 @@ namespace GymBrah
                         }
                         if (result.Type == TokenType.Integer) // Handle integers
                         {
+                            idType = TokenType.Integer;
                             goto case TokenType.Integer;
                         }
                         if (result.Type == TokenType.Double) // Handle doubles
                         {
+                            idType = TokenType.Double;
                             goto case TokenType.Double;
                         }
                         if (result.Type == TokenType.String) // Handle strings
@@ -166,22 +170,53 @@ namespace GymBrah
                     }
                     if (FunctionTable.TryGetValue(CurrentToken.Content, out Function function)) // If function assignment
                     {
+                        TokenType returnVal;
                         // Check function type is being maintained in assignment
                         switch (_assignmentType)
                         {
                             case TokenType.Integer:
                             {
-                                if (function.Type == TokenType.Bench) break;
+                                if (function.Type == TokenType.Bench)
+                                {
+                                    returnVal = TokenType.Integer;
+                                    
+                                    if (!VariableTable.TryAdd(_variableName, new IntegerValue("function")))
+                                    {
+                                        VariableTable[_variableName] = new IntegerValue("function");
+                                    }
+                                    
+                                    break;
+                                }
                                 goto default;
                             }
                             case TokenType.String:
                             {
-                                if (function.Type == TokenType.Squat) break;
+                                if (function.Type == TokenType.Squat)
+                                {
+                                    returnVal = TokenType.String;
+                                    
+                                    if (!VariableTable.TryAdd(_variableName, new StringValue("function")))
+                                    {
+                                        VariableTable[_variableName] = new StringValue("function");
+                                    }
+                                    
+                                    break;
+                                }
                                 goto default;
                             }
                             case TokenType.Double:
                             {
-                                if (function.Type == TokenType.DeadLift) break;
+                                if (function.Type == TokenType.DeadLift)
+                                {
+                                    returnVal = TokenType.Double;
+                                    
+                                    if (!VariableTable.TryAdd(_variableName, new DoubleValue("function")))
+                                    {
+                                        VariableTable[_variableName] = new DoubleValue("function");
+                                    }
+                                    
+                                    break;
+                                }
                                 goto default;
                             }
                             default:
@@ -189,8 +224,8 @@ namespace GymBrah
                                 throw new Exception("Function return type does not match variable type.");  
                             }
                         }
-                        
-                        return new TerminalNode(new Token(TokenType.Illegal, new Functions(GetRemainingTokens(), ref VariableTable, ref FunctionTable).ParseTree().Evaluate()));
+
+                        return new TerminalNode(new Token(returnVal, new Functions(GetRemainingTokens(), ref VariableTable, ref FunctionTable).ParseTree().Evaluate()));
                     }
                     
                     throw new Exception("Variable is being assigned to something undefined.");
@@ -210,18 +245,35 @@ namespace GymBrah
                     calcTokens.Insert(0, new Token(TokenType.OpenBracket, "("));
                     calcTokens.Insert(calcTokens.Count - 1, new Token(TokenType.CloseBracket, ")"));
 
-                    string calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable).ParseTree().Evaluate(); 
+                    string calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, _evaluate).ParseTree().Evaluate();
 
-                    if (CurrentToken.Type == TokenType.Integer) // Store integer
+                    if (idType == TokenType.Illegal)
                     {
-                        if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
-                            VariableTable[_variableName] = new IntegerValue(calculation);
+                        if (CurrentToken.Type == TokenType.Integer) // Store integer
+                        {
+                            if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
+                                VariableTable[_variableName] = new IntegerValue(calculation);
+                        }
+                        else // Store double
+                        {
+                            if (!VariableTable.TryAdd(_variableName, new DoubleValue(calculation)))
+                                VariableTable[_variableName] = new DoubleValue(calculation);
+                        }
                     }
-                    else // Store double
+                    else
                     {
-                        if (!VariableTable.TryAdd(_variableName, new DoubleValue(calculation)))
-                            VariableTable[_variableName] = new DoubleValue(calculation);
+                        if (idType == TokenType.Integer) // Store integer
+                        {
+                            if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
+                                VariableTable[_variableName] = new IntegerValue(calculation);
+                        }
+                        else // Store double
+                        {
+                            if (!VariableTable.TryAdd(_variableName, new DoubleValue(calculation)))
+                                VariableTable[_variableName] = new DoubleValue(calculation);
+                        }
                     }
+                    
                     
                     // If expression is being string evaluated
                     if (!_evaluate) calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, false).ParseTree().Evaluate();
@@ -245,6 +297,8 @@ namespace GymBrah
                         {
                             throw new Exception("String identifier not defined.");
                         }
+
+                        if (result.Content == "function") _evaluate = false;
                         
                         // Return string evaluation or variable content
                         if (!_evaluate) returnToken = CurrentToken;

@@ -23,7 +23,7 @@ namespace GymBrah
     public class Calculator : Parse
     {
         // Boolean for either return of string of expression or compilation of expression
-        private readonly bool _parseMaths; 
+        private bool _parseMaths; 
 
         /// <summary>
         /// Inherited constructor and a boolean for either the string or integer evaluation.
@@ -64,6 +64,8 @@ namespace GymBrah
                     // Check identifier exists
                     if (VariableTable.TryGetValue(idToken.Content, out Value result))
                     {
+                        if (result.Content == "function") _parseMaths = false;
+                        
                         if (result.Type == TokenType.Integer)
                         {
                             // Check that variable is of the right type

@@ -19,7 +19,7 @@ namespace GymBrah
     /// </summary>
     public class Statement : Parse
     {
-        private readonly bool _evaluate; // Bool to describe whether identifiers should be evaluated or not
+        private bool _evaluate; // Bool to describe whether identifiers should be evaluated or not
 
         public Statement(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable, bool evaluate = true) : 
             base(tokens, ref variableTable, ref functionTable)
@@ -73,13 +73,15 @@ namespace GymBrah
                 case TokenType.Double:  // Print out a literal double
                 case TokenType.Integer: // Print out a literal integer
                 {
-                    curToken = new Token(TokenType.String, "\"" + curToken.Content + "\"");
+                    curToken = new Token(TokenType.String, "\"" + curToken.Content + "\")");
                     return new ScreamContentNode(nodeOne, _parseB(), curToken);
                 }
                 case TokenType.Id: // Print out a variable
                 {
                     if (VariableTable.TryGetValue(curToken.Content, out Value result))
                     {
+                        if (result.Content == "function") _evaluate = false;
+                        
                         switch(result.Type)
                         {
                             case TokenType.String: // If string use %s

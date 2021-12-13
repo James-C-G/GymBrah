@@ -289,7 +289,46 @@ namespace GymBrah
                         case TokenType.String:
                         {
                             tree = new Selection(currentLine, ref _variableTable, ref _functionTable);
-                            break;
+                            
+                            int bracket = 0;
+                            int j = i;
+                                
+                            for (; j < _lines.Count; j++)
+                            {
+                                if (_lines[j].Last().Type == TokenType.LightWeight)
+                                {
+                                    bracket++;
+                                }
+                                if (_lines[j][0].Type == TokenType.Baby)
+                                {
+                                    bracket--;
+
+                                    if (bracket < 0)
+                                    {
+                                        throw new Exception("Braces not closed properly.");
+                                    }
+                                    if (bracket == 0)
+                                    {
+                                        _outString.AppendLine(tree.ParseTree().Evaluate());
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse( ref counter, false);
+                                        
+                                        if (scope.Split('\n').Last().Contains("Error"))
+                                            throw new Exception(scope.Split('\n').Last().Split(':')[1]);
+                                        
+                                        _outString.Append(scope);
+                                        _outString.AppendLine("}");
+                                        
+                                        counter++;
+                                        
+                                        i = j;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (bracket != 0) throw new Exception("Braces not closed properly.");
+                            
+                            continue;
                         }
                         default:
                         {
