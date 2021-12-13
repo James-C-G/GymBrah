@@ -36,7 +36,7 @@ namespace GymBrah
                 exprTokens.Add(i);
             }
 
-            return null; // TODO Throw errors
+            throw new Exception("Selection statement not closed properly.");
         }
         
         private List<Token> _parseA()
@@ -54,7 +54,7 @@ namespace GymBrah
                 exprTokens.Add(i);
             }
 
-            return null;  //TODO Throw errors
+            throw new Exception("Unrecognised selection statement.");
         }
 
         public override Node ParseTree()

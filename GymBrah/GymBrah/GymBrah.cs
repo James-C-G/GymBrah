@@ -101,7 +101,7 @@ namespace GymBrah
             }
             catch (Exception e)
             {
-                throw new Exception("Error: Syntax error " + e.Message);
+                throw new Exception("Lexing error - " + e.Message);
             }
         }
 
@@ -110,34 +110,23 @@ namespace GymBrah
         /// </summary>
         /// <returns> String of parsed text. </returns>
         /// <exception cref="Exception"> Errors in parsing and lexing. </exception>
-        public string Parse(bool parse = true)
+        public string Parse(ref int counter, bool parse = true, TokenType functionType = TokenType.Bench)
         {
-            // Perform lexing, if necessary, and catch any errors
-            if (_lines == null)
-            {
-                try
-                {
-                    _lex();
-
-                    if (_lines.Count == 0) throw new Exception("Error, unrecognised input code.");
-                }
-                catch (Exception e)
-                {
-                    _outString.AppendLine(e.Message);
-                    return _outString.ToString();
-                }
-            }
-            
-            Parse tree;
-
-            //TODO Catch errors with hacks e.g. int x = 3? 3, int main(int x){, int y){
-            
             // Catch any parse errors.
             try
             {
+                // Perform lexing, if necessary, and catch any errors
+                if (_lines == null)
+                {
+                    _lex();
+                    if (_lines.Count == 0) throw new Exception("Unrecognised input code.");
+                }
+
                 for (int i = 0; i < _lines.Count; i++)
                 {
+                    Parse tree;
                     List<Token> currentLine = _lines[i];
+                    counter++;
 
                     // Different type of line start
                     switch (currentLine[0].Type) 
@@ -150,6 +139,11 @@ namespace GymBrah
                         case TokenType.Scream: // Statement
                         {
                             tree = new Statement(currentLine, ref _variableTable, ref _functionTable, parse);
+                            break;
+                        }
+                        case TokenType.Yeet:
+                        {
+                            tree = new Return(currentLine, ref _variableTable, ref _functionTable, functionType, parse);
                             break;
                         }
                         case TokenType.Baby: // End of brackets
@@ -215,13 +209,15 @@ namespace GymBrah
                                             }
                                         }
                                         
-                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref scopeTable, ref _functionTable).Parse(false);
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref scopeTable, ref _functionTable).Parse(ref counter, false, function.Type);
                                         
                                         if (scope.Split('\n').Last().Contains("Error"))
                                             throw new Exception(scope.Split('\n').Last().Split(':')[1]);
                                         
                                         _outString.Append(scope);
                                         _outString.AppendLine("}");
+                                        
+                                        counter++;
                                         
                                         i = j;
                                         break;
@@ -257,13 +253,15 @@ namespace GymBrah
                                     if (bracket == 0)
                                     {
                                         _outString.AppendLine(tree.ParseTree().Evaluate());
-                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse(false);
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse( ref counter, false);
                                         
                                         if (scope.Split('\n').Last().Contains("Error"))
                                             throw new Exception(scope.Split('\n').Last().Split(':')[1]);
                                         
                                         _outString.Append(scope);
                                         _outString.AppendLine("}");
+                                        
+                                        counter++;
                                         
                                         i = j;
                                         break;
@@ -304,8 +302,12 @@ namespace GymBrah
             }
             catch (Exception e)
             {
-                _outString.Append("Error: " + e.Message);
-                return _outString.ToString();
+                string output = e.Message;
+                if (output.Contains("Error: On line " + counter + " - "))
+                {
+                    output = output.Replace("Error: On line " + counter + " - ", "");
+                }
+                throw new Exception("Error: On line " + counter + " - " + output);
             }
             
             return _outString.ToString();

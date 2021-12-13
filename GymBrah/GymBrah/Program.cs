@@ -26,15 +26,23 @@ namespace GymBrah
             {
                 if (args[0].Substring(args[0].Length - 3) == "txt") // Ensure text file input
                 {
-                    GymBrah x = new GymBrah(args[0]);
-                    string parse = x.Parse();
-
-                    parse = "#include <stdio.h>\nint main()\n{\n" + parse + "}";
-                    Console.Out.Write(parse);
+                    try
+                    {
+                        GymBrah x = new GymBrah(args[0]);
+                        int line = 0;
+                        string parse = x.Parse(ref line);
+                        
+                        parse = "#include <stdio.h>\nint main()\n{\n" + parse + "}";
+                        Console.Out.Write(parse);
                     
-                    string file = args[0].Substring(0, args[0].Length - 4);
+                        string file = args[0].Substring(0, args[0].Length - 4);
                 
-                    File.WriteAllText( file + ".c", parse);
+                        File.WriteAllText( file + ".c", parse);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine(e.Message);
+                    }
                 }
                 else if (args[0].Substring(args[0].Length - 1) == "c") // C file input
                 {
@@ -60,7 +68,7 @@ namespace GymBrah
             }
             else
             {
-                Console.Out.Write("Error: Cannot be run like this.");
+                Console.Out.Write("Error: Program cannot be run like this.");
             }
         }
     }

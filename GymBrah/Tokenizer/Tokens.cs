@@ -26,12 +26,13 @@ namespace Tokenizer
         DeadLift,       // double
         Can,            // =
         
-        Plates,     // ( var * 40) + 20
-        BroSplit,   // Function definition
+        Plates,         // ( var * 40) + 20
+        BroSplit,       // Function definition
         
         Scream,         // Printf("")
         Is,             // If
         DropSet,        // While
+        Yeet,           // return
         
         OpenBracket,    // (    
         CloseBracket,   // )
@@ -75,6 +76,7 @@ namespace Tokenizer
             {"dropset", TokenType.DropSet},
             {"deadlift", TokenType.DeadLift},
             {"brosplit", TokenType.BroSplit},
+            {"yeet", TokenType.Yeet}
         };
     }
 

@@ -297,6 +297,11 @@ namespace Tokenizer
                             Tokens.Add(new Token(TokenType.DropSet, "while "));
                             break;
                         }
+                        case TokenType.Yeet:
+                        {
+                            Tokens.Add(new Token(TokenType.Yeet, "return "));
+                            break;
+                        }
                         default:
                         {
                             Tokens.Add(new Token(result, outString));

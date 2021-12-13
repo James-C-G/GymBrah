@@ -32,7 +32,7 @@ namespace GymBrah
                 }
                 default:
                 {
-                    return null;  //TODO Throw errors
+                    throw new Exception("Unrecognised repetition statement.");
                 }
             }
         }

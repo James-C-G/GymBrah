@@ -630,4 +630,21 @@ namespace Compiler
             return _nodeToken.Content + "," + _params.Evaluate();
         }
     }
+    
+    // -------------------------------- Return Nodes
+
+    public class ReturnNode : TokenNode
+    {
+        private readonly Node _returnVal;
+        
+        public ReturnNode(Token nodeToken, Node returnVal) : base(nodeToken)
+        {
+            _returnVal = returnVal;
+        }
+        
+        public override string Evaluate()
+        {
+            return _nodeToken.Content + _returnVal.Evaluate() + ";";
+        }
+    }
 }
