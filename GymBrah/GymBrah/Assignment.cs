@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Selection.cs, Statement.cs  
- * Last Modified :  12/12/21
+ * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Assignment parse tree that parses assignment expressions for string, integers, and doubles.
  */
@@ -164,14 +164,42 @@ namespace GymBrah
 
                         throw new Exception("Variable being assigned is not a valid type.");
                     }
+                    if (FunctionTable.TryGetValue(CurrentToken.Content, out Function function)) // If function assignment
+                    {
+                        // Check function type is being maintained in assignment
+                        switch (_assignmentType)
+                        {
+                            case TokenType.Integer:
+                            {
+                                if (function.Type == TokenType.Bench) break;
+                                goto default;
+                            }
+                            case TokenType.String:
+                            {
+                                if (function.Type == TokenType.Squat) break;
+                                goto default;
+                            }
+                            case TokenType.Double:
+                            {
+                                if (function.Type == TokenType.DeadLift) break;
+                                goto default;
+                            }
+                            default:
+                            {
+                                throw new Exception("Function return type does not match variable type.");  
+                            }
+                        }
+                        
+                        return new TerminalNode(new Token(TokenType.Illegal, new Functions(GetRemainingTokens(), ref VariableTable, ref FunctionTable).ParseTree().Evaluate()));
+                    }
                     
-                    throw new Exception("Variable being assigned is not defined.");
+                    throw new Exception("Variable is being assigned to something undefined.");
                 }
                 case TokenType.Double: // Calculate expression
                 case TokenType.Integer:
                 {
                     // Ensure assignment type and double can store an integer still
-                    if (CurrentToken.Type != _assignmentType && _assignmentType != TokenType.Double) 
+                    if (CurrentToken.Type != _assignmentType && _assignmentType != TokenType.Double && CurrentToken.Type != TokenType.Id) 
                     {
                         throw new Exception("Incorrect integer assignment type.");
                     }
@@ -204,7 +232,7 @@ namespace GymBrah
                 case TokenType.String:
                 {
                     // Ensure assignment type 
-                    if (CurrentToken.Type != _assignmentType)
+                    if (CurrentToken.Type != _assignmentType && CurrentToken.Type != TokenType.Id)
                     {
                         throw new Exception("Incorrect string assignment type.");
                     }

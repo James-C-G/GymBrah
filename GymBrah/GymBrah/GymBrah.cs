@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Selection.cs, Statement.cs  
- * Last Modified :  10/12/21
+ * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Class to wrap around the whole parser and create the individual trees for parsing of the program and
  *                  then evaluate them.  
@@ -37,16 +37,25 @@ namespace GymBrah
         public GymBrah(string path)
         {
             _path = path;
-            _outString.AppendLine("#include <stdio.h>\n");
+            //_outString.AppendLine("#include <stdio.h>\n");
+            
+            // Initialise tables
+            _variableTable = new Table().VariableTable;
+            _functionTable = new Table().FunctionTable;
         }
         
         /// <summary>
-        /// Constructor to initialise parser with a list of tokens split into lines.
+        /// Constructor to initialise parser with a list of tokens split into lines and both the variable and function
+        /// table.
         /// </summary>
         /// <param name="lines"> List of tokens split into lines. </param>
-        public GymBrah(List<List<Token>> lines)
+        /// <param name="variableTable"> Variable table. </param>
+        /// <param name="functionTable"> Function table. </param>
+        public GymBrah(List<List<Token>> lines, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable)
         {
             _lines = lines;
+            _variableTable = variableTable;
+            _functionTable = functionTable;
         }
         
         /// <summary>
@@ -95,9 +104,6 @@ namespace GymBrah
                 throw new Exception("Error: Syntax error " + e.Message);
             }
         }
-        
-        //TODO When parsing a function, create new gymbrah object with remaining tokens up til "}"
-        //TODO When in a selection/repetition don't evaluate identifiers e.g. x = x + 1;
 
         /// <summary>
         /// Method to parse the entire inputted text file.
@@ -106,10 +112,6 @@ namespace GymBrah
         /// <exception cref="Exception"> Errors in parsing and lexing. </exception>
         public string Parse(bool parse = true)
         {
-            // Initialise tables
-            _variableTable = new Table().VariableTable;
-            _functionTable = new Table().FunctionTable;
-            
             // Perform lexing, if necessary, and catch any errors
             if (_lines == null)
             {
@@ -125,8 +127,7 @@ namespace GymBrah
                     return _outString.ToString();
                 }
             }
-
-            int counter = 0;
+            
             Parse tree;
 
             //TODO Catch errors with hacks e.g. int x = 3? 3, int main(int x){, int y){
@@ -137,8 +138,7 @@ namespace GymBrah
                 for (int i = 0; i < _lines.Count; i++)
                 {
                     List<Token> currentLine = _lines[i];
-                    counter++; //TODO Maybe not use
-                    
+
                     // Different type of line start
                     switch (currentLine[0].Type) 
                     {
@@ -154,8 +154,7 @@ namespace GymBrah
                         }
                         case TokenType.Baby: // End of brackets
                         {
-                            _outString.AppendLine("}\n");
-                            continue;
+                            throw new Exception("Bracket cannot be closed if not opened.");
                         }
                         case TokenType.BroSplit: // Function definition
                         {
@@ -182,14 +181,49 @@ namespace GymBrah
                                     if (bracket == 0)
                                     {
                                         _outString.AppendLine(tree.ParseTree().Evaluate());
-                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - 1)).Parse();
+
+                                        if (!_functionTable.TryGetValue(currentLine[2].Content, out Function function))
+                                        {
+                                            throw new Exception("Function is not defined.");
+                                        }
+                                        
+                                        Dictionary<String, Value> scopeTable = new Table().VariableTable;
+                                        
+                                        foreach (var param in function.Parameters)
+                                        {
+                                            switch (param.VariableType.Type)
+                                            {
+                                                case TokenType.Bench:
+                                                {
+                                                    scopeTable.TryAdd(param.VariableName, new IntegerValue(param.VariableName));
+                                                    break;
+                                                }
+                                                case TokenType.Squat:
+                                                {
+                                                    scopeTable.TryAdd(param.VariableName, new StringValue(param.VariableName));
+                                                    break;
+                                                }
+                                                case TokenType.DeadLift:
+                                                {
+                                                    scopeTable.TryAdd(param.VariableName, new DoubleValue(param.VariableName));
+                                                    break;
+                                                }
+                                                default:
+                                                {
+                                                    throw new Exception("Invalid datatype.");
+                                                }
+                                            }
+                                        }
+                                        
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref scopeTable, ref _functionTable).Parse(false);
                                         
                                         if (scope.Split('\n').Last().Contains("Error"))
                                             throw new Exception(scope.Split('\n').Last().Split(':')[1]);
                                         
                                         _outString.Append(scope);
+                                        _outString.AppendLine("}");
                                         
-                                        i += j - 1;
+                                        i = j;
                                         break;
                                     }
                                 }
@@ -202,7 +236,44 @@ namespace GymBrah
                         case TokenType.DropSet: // Repetition
                         {
                             tree = new Repetition(currentLine, ref _variableTable, ref _functionTable);
-                            break;
+                            
+                            int bracket = 0;
+                            int j = i;
+                                
+                            for (; j < _lines.Count; j++)
+                            {
+                                if (_lines[j].Last().Type == TokenType.LightWeight)
+                                {
+                                    bracket++;
+                                }
+                                if (_lines[j][0].Type == TokenType.Baby)
+                                {
+                                    bracket--;
+
+                                    if (bracket < 0)
+                                    {
+                                        throw new Exception("Braces not closed properly.");
+                                    }
+                                    if (bracket == 0)
+                                    {
+                                        _outString.AppendLine(tree.ParseTree().Evaluate());
+                                        string scope = new GymBrah(_lines.GetRange(i + 1, j - i - 1), ref _variableTable, ref _functionTable).Parse(false);
+                                        
+                                        if (scope.Split('\n').Last().Contains("Error"))
+                                            throw new Exception(scope.Split('\n').Last().Split(':')[1]);
+                                        
+                                        _outString.Append(scope);
+                                        _outString.AppendLine("}");
+                                        
+                                        i = j;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (bracket != 0) throw new Exception("Braces not closed properly.");
+                            
+                            continue;
                         }
                         case TokenType.Id: // Selection
                         {
@@ -220,12 +291,11 @@ namespace GymBrah
                         case TokenType.String:
                         {
                             tree = new Selection(currentLine, ref _variableTable, ref _functionTable);
-                            counter += 2;
                             break;
                         }
                         default:
                         {
-                            throw new Exception("Error: Invalid statement.");
+                            throw new Exception("Invalid statement.");
                         }
                     }
                     
@@ -234,7 +304,7 @@ namespace GymBrah
             }
             catch (Exception e)
             {
-                _outString.Append("Error on line " + counter + ": " + e.Message);
+                _outString.Append("Error: " + e.Message);
                 return _outString.ToString();
             }
             

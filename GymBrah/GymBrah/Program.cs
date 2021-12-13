@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Selection.cs, Statement.cs  
- * Last Modified :  10/12/21
+ * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Entry class for the running of the parser from an exe. The program takes two types of command line
  *                  arguments - a singular text file containing code to be parsed into a c file in the same location,
@@ -28,8 +28,10 @@ namespace GymBrah
                 {
                     GymBrah x = new GymBrah(args[0]);
                     string parse = x.Parse();
+
+                    parse = "#include <stdio.h>\nint main()\n{\n" + parse + "}";
                     Console.Out.Write(parse);
-            
+                    
                     string file = args[0].Substring(0, args[0].Length - 4);
                 
                     File.WriteAllText( file + ".c", parse);

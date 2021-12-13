@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Selection.cs, Statement.cs 
- * Last Modified :  12/12/21
+ * Last Modified :  13/12/21
  * Version :        1.4
  * Description :    Function class that builds parse trees for both function definitions and function calls. Parameters
  *                  are recursively parsed and types are maintained.
@@ -276,6 +276,8 @@ namespace GymBrah
                 case TokenType.Id: // Function call
                 {
                     Token functionName = CurrentToken;
+
+                    if (functionName.Content == "main") throw new Exception("Main cannot be called.");
                     
                     if (FunctionTable.TryGetValue(ScanToken().Content, out Function result)) // Make sure function exists
                     {
@@ -301,6 +303,8 @@ namespace GymBrah
                     
                     if (CurrentToken.Type == TokenType.Id)
                     {
+                        if (CurrentToken.Content == "main") throw new Exception("Main cannot be redefined.");
+                        
                         // Check not already defined as variable.
                         if (!VariableTable.TryGetValue(CurrentToken.Content, out Value result))
                         {
