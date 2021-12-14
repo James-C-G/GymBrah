@@ -1,9 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Threading.Tasks;
+﻿/*
+ * Author :         Jamie Grant & Pawel Bielinski
+ * Files :          MainWindow.xaml.cs, MainWindow.xaml, App.xaml.cs, App.xaml 
+ * Last Modified :  14/12/21
+ * Version :        1.4
+ * Description :    App file.
+ */
+
 using System.Windows;
 
 namespace IDE

@@ -17,26 +17,31 @@ namespace GymBrah
 {
     class Program
     {
-
+        /// <summary>
+        /// Entry point for the EsoLang compiler, taking command line arguments for the language code to be parsed into
+        /// c and the c code to be compiled.
+        /// </summary>
+        /// <param name="args"> Command line arguments. </param>
         static void Main(string[] args)
         {
-            // TODO Check that arg paths exist
-        
             if (args.Length == 1) 
             {
                 if (args[0].Substring(args[0].Length - 3) == "txt") // Ensure text file input
                 {
                     try
                     {
+                        // Build parser
                         GymBrah x = new GymBrah(args[0]);
                         int line = 0;
-                        string parse = x.Parse(ref line);
+                        string parse = x.Parse(ref line); // Get output
                         
+                        // Wrap in main method
                         parse = "#include <stdio.h>\nint main()\n{\n" + parse + "}";
                         Console.Out.Write(parse);
                     
                         string file = args[0].Substring(0, args[0].Length - 4);
                 
+                        // Write to c file
                         File.WriteAllText( file + ".c", parse);
                     }
                     catch (Exception e)
@@ -46,6 +51,18 @@ namespace GymBrah
                 }
                 else if (args[0].Substring(args[0].Length - 1) == "c") // C file input
                 {
+                    // Ensure file path exists
+                    try
+                    {
+                        StreamReader x = new StreamReader(args[0]);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Write("Error: Compile error - " + e.Message);
+                        return;
+                    }
+                    
+                    // Get file path
                     string file = "\"" + args[0].Substring(0, args[0].Length - 2);
                     
                     // Compile into C executable
@@ -59,6 +76,7 @@ namespace GymBrah
                     process.StartInfo = startInfo;
                     process.Start();
                     
+                    // Print any errors with compilation
                     Console.Out.Write(process.StandardOutput.ReadToEnd());
                 }
                 else

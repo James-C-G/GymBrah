@@ -3,8 +3,8 @@
  * Files :          Node.cs, Parse.cs, Value.cs
  * Last Modified :  06/12/21
  * Version :        1.4
- * Description :    Class for the storing of a value in the variable table, using this wrapper class, during the process
- *                  of parsing.
+ * Description :    Class for the storing of a value in the variable table and a function in the function table, using
+ *                  this wrapper class, during the process of parsing.
  */
 
 using System;
@@ -18,8 +18,8 @@ namespace Compiler
     /// </summary>
     public class Table
     {
-        public Dictionary<String, Value> VariableTable = new Dictionary<String, Value>();
-        public Dictionary<String, Function> FunctionTable = new Dictionary<String, Function>();
+        public readonly Dictionary<String, Value> VariableTable = new Dictionary<String, Value>();
+        public readonly Dictionary<String, Function> FunctionTable = new Dictionary<String, Function>();
     }
 
     /// <summary>
@@ -30,11 +30,20 @@ namespace Compiler
         public readonly TokenType Type;
         public readonly string Content;
 
+        /// <summary>
+        /// Protected constructor.
+        /// </summary>
+        /// <param name="type"> Value type. </param>
         protected Value(TokenType type)
         {
             Type = type;
         }
         
+        /// <summary>
+        /// Protected constructor.
+        /// </summary>
+        /// <param name="type"> Value type. </param>
+        /// <param name="content"> Value content. </param>
         protected Value(TokenType type, string content)
         {
             Type = type;
@@ -68,11 +77,6 @@ namespace Compiler
         public StringValue(string content) : base(TokenType.String, content)
         {
         }
-        
-        static void Main()
-        {
-            Console.Out.WriteLine("");
-        }
     }
     
     /// <summary>
@@ -89,76 +93,50 @@ namespace Compiler
         }
     }
 
+    /// <summary>
+    /// Parameter class for storing a parameter of a function.
+    /// </summary>
     public class Parameter
     {
-        public readonly Token VariableType;
-        public readonly string VariableName;
+        public readonly Token VariableType;     // Data type
+        public readonly string VariableName;    // Variable identifier
         
+        /// <summary>
+        /// Constructor for a parameter.
+        /// </summary>
+        /// <param name="variableType"> Data type. </param>
+        /// <param name="variableName"> Variable identifier. </param>
         public Parameter(Token variableType, string variableName)
         {
             VariableName = variableName;
             VariableType = variableType;
         }
         
+        /// <summary>
+        /// Parameter to string method printing out the parameter and its type.
+        /// </summary>
+        /// <returns> Function parameter. </returns>
         public override string ToString()
         {
             return VariableType.Content + VariableName;
         }
     }
     
+    /// <summary>
+    /// Function class inheriting from value.
+    /// </summary>
     public class Function : Value
     {
-        public readonly List<Parameter> Parameters;
-        public Dictionary<String, Value> VariableTable = new Dictionary<string, Value>();
-
+        public readonly List<Parameter> Parameters; // List of parameters in function
+        
+        /// <summary>
+        /// Inherited constructor that stores the function return type and the list of parameters in the function.
+        /// </summary>
+        /// <param name="returnValue"> Return type. </param>
+        /// <param name="parameters"> Function parameters. </param>
         public Function(TokenType returnValue, List<Parameter> parameters) : base(returnValue)
         {
             Parameters = parameters;
-
-            foreach (var i in Parameters)
-            {
-                Value parameterValue;
-                switch (i.VariableType.Type)
-                {
-                    case TokenType.Bench:
-                    {
-                        parameterValue = new IntegerValue("");
-                        break;
-                    }
-                    case TokenType.Squat:
-                    {
-                        parameterValue = new StringValue("");
-                        break;
-                    }
-                    case TokenType.DeadLift:
-                    {
-                        parameterValue = new DoubleValue("");
-                        break;
-                    }
-                    default:
-                    {
-                        throw new Exception("Unrecognised variable type.");
-                    }
-                }
-                
-                VariableTable.Add(i.VariableName, parameterValue);
-            }
         }
-
-        public override string ToString()
-        {
-            string output = "";
-            
-            foreach (var i in Parameters)
-            {
-                output += i + ", ";
-            }
-
-            output = output.Remove(output.Length - 2);
-            output += ")";
-            
-            return output;
-        }
-
     }
 }

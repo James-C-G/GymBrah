@@ -1,12 +1,14 @@
-﻿<Window x:Class="IDE.MainWindow"
+﻿<!-- XAML file for the MainWindow class where the IDE is designed -->
+<Window x:Class="IDE.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:IDE"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="MainWindow" Height="500" Width="1000">
     <Grid>
+        <!-- Grid with two columns and rows for each of the components -->
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="2*" />
             <ColumnDefinition Width="2*" />
@@ -16,18 +18,23 @@
             <RowDefinition Height="1*" />
         </Grid.RowDefinitions>
         
-        <Border Grid.Column="0" Grid.Row="0" BorderThickness="1" BorderBrush="Black">
-            <TextBox Name="InputTerminal" AcceptsReturn="True" AcceptsTab="True" VerticalScrollBarVisibility="Auto" />
+        <!-- Input terminal for the user to write code -->
+        <Border Grid.Column="0" Grid.Row="0" Margin="10" BorderThickness="1" BorderBrush="Black">
+            <TextBox Name="InputTerminal"
+                     AcceptsReturn="True" 
+                     AcceptsTab="True" 
+                     VerticalScrollBarVisibility="Auto" />
         </Border>
         
-        
-        <Border Grid.Column="1" Grid.Row="0" BorderThickness="1" BorderBrush="Black">
+        <!-- Output terminal for the user to view their parsed code/compiled code output -->
+        <Border Grid.Column="1" Grid.Row="0" Margin="10" BorderThickness="1" BorderBrush="Black">
             <TextBox Name = "OutputTerminal"
-                     Background="Transparent"
                      IsReadOnly="True"
-                     TextWrapping="Wrap" />
+                     TextWrapping="Wrap" 
+                     VerticalScrollBarVisibility="Auto" />
         </Border>
         
+        <!-- Buttons for the parsing, compiling, and clearing of code -->
         <Button Name="Parse" Grid.Column="0" Grid.Row="1" Width="150" Height="50">Parse</Button>
         <Button Name="Compile" Grid.Column="1" Grid.Row="1" Width="150" Height="50">Compile</Button>
         <Button Name="Clear" Grid.Column="1" Grid.Row="1" Width="150" Height="50" Visibility="Hidden">Clear</Button>

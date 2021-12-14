@@ -74,5 +74,10 @@ namespace Compiler
                 return null;
             }
         }
+        
+        static void Main()
+        {
+            Console.Out.WriteLine("");
+        }
     }
 }

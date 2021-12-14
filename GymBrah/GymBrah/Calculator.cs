@@ -85,10 +85,11 @@ namespace GymBrah
 
                     throw new Exception("Variable is not defined.");
                 }
-                case TokenType.OpenBracket: //TODO Doesn't handle close bracket errors
+                case TokenType.OpenBracket:
                 {
                     ScanToken();
                     
+                    // Parse contents of brackets
                     Node node = ParseTree();
                     
                     // Parse until a close bracket

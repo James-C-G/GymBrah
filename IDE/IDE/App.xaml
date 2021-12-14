@@ -1,4 +1,5 @@
-﻿<Application x:Class="IDE.App"
+﻿<!-- XAML for the App class -->
+<Application x:Class="IDE.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:IDE"

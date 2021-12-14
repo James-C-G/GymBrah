@@ -8,8 +8,6 @@
  *                  multiple uses, as well as unique nodes specific for their individual parse tree.
  */
 
-// TODO Left, Right == null for terminal, content made generic
-
 using Tokenizer;
 
 namespace Compiler
