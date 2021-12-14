@@ -63,6 +63,7 @@ namespace Tokenizer
                 {
                     case '\n': // Characters to ignore.
                     case '\r':
+                    case '\t':
                     case ' ':
                     {
                         _currentChar = _inStream.Read();
@@ -155,6 +156,12 @@ namespace Tokenizer
                         _getComment();
                         break;
                     }
+                    case ',': // Comma
+                    {
+                        Tokens.Add(new Token(TokenType.Comma, ","));
+                        _currentChar = _inStream.Read();
+                        break;
+                    }
                     default:
                     {
                         // Check for string of digits, or letters (variables)
@@ -196,14 +203,25 @@ namespace Tokenizer
         private void _getDigits()
         {
             String outString = "";
+            bool isDouble = false;
             
             while (_isDigit())
             {
                 outString += (char)_currentChar;
                 _currentChar = _inStream.Read();
+                
+                if ((char) _currentChar == '.') // Double handler
+                {
+                    if (isDouble) throw new Exception("Double cannot have more than one decimal point.");
+                    
+                    isDouble = true;
+                    outString += (char)_currentChar;
+                    _currentChar = _inStream.Read();
+                }
             }
-
-            Tokens.Add(new Token(TokenType.Integer, outString));
+            
+            if (isDouble) Tokens.Add(new Token(TokenType.Double, outString));
+            else Tokens.Add(new Token(TokenType.Integer, outString));
         }
 
         /// <summary>
@@ -257,7 +275,7 @@ namespace Tokenizer
                         }
                         case TokenType.DeadLift:
                         {
-                            Tokens.Add(new Token(TokenType.DeadLift, "bool "));
+                            Tokens.Add(new Token(TokenType.DeadLift, "double "));
                             break;
                         }
                         case TokenType.Can:
@@ -278,6 +296,11 @@ namespace Tokenizer
                         case TokenType.DropSet:
                         {
                             Tokens.Add(new Token(TokenType.DropSet, "while "));
+                            break;
+                        }
+                        case TokenType.Gain:
+                        {
+                            Tokens.Add(new Token(TokenType.Gain, "return "));
                             break;
                         }
                         default:
@@ -313,39 +336,30 @@ namespace Tokenizer
             
             _currentChar = _inStream.Read();
 
-            while (_isLetter() || _isDigit() || (char)_currentChar == '\\') //TODO Make method for escape characters
+            while (_isLetter() || _isDigit() || _isSpecialChar())
             {
+                if ((char) _currentChar == '\\') // Handle escape characters
+                {
+                    outString += (char) _currentChar;
+                    _currentChar = _inStream.Read();
+                        
+                    switch ((char) _currentChar)
+                    {
+                        case '\'':
+                        case '\"':
+                        case '\\':
+                        {
+                            outString += (char) _currentChar;
+                            _currentChar = _inStream.Read();
+                            break;
+                        }
+                    }
+                       
+                    continue;
+                }
+
                 outString += (char)_currentChar;
                 _currentChar = _inStream.Read();
-                
-                switch ((char) _currentChar) // Handle escape characters
-                {
-                    case '\\':
-                    {
-                        outString += (char) _currentChar;
-                        _currentChar = _inStream.Read();
-                        
-                        switch ((char) _currentChar)
-                        {
-                            case '\'':
-                            case '\"':
-                            case '\\':
-                            {
-                                outString += (char) _currentChar;
-                                _currentChar = _inStream.Read();
-                                break;
-                            }
-                        }
-                       
-                        break;
-                    }
-                    case ' ':
-                    {
-                        outString += (char) _currentChar;
-                        _currentChar = _inStream.Read();
-                        break;
-                    }
-                }
             }
 
             // Ensure the correct string quote is used at the start and end
@@ -359,7 +373,7 @@ namespace Tokenizer
                 throw new Exception("String not closed properly.");
             }
         }
-        
+
         /// <summary>
         /// Boolean for whether the current character is an integer
         /// </summary>
@@ -380,6 +394,13 @@ namespace Tokenizer
                    (char)_currentChar == '_';
         }
         
-        
+        /// <summary>
+        /// Boolean for whether the current character is a special character.
+        /// </summary>
+        /// <returns> True/False </returns>
+        private bool _isSpecialChar()
+        {
+            return (char)_currentChar == ' ' || (char)_currentChar == '\\';
+        }
     }
 }

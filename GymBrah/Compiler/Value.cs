@@ -19,27 +19,26 @@ namespace Compiler
     public class Table
     {
         public Dictionary<String, Value> VariableTable = new Dictionary<String, Value>();
+        public Dictionary<String, Function> FunctionTable = new Dictionary<String, Function>();
     }
-    
-    /// <summary>
-    /// Enum for the possible variable types that can be stored.
-    /// </summary>
-    public enum ValueType
-    {
-        Integer = TokenType.Integer,
-        String = TokenType.String,
-    }
-    
+
     /// <summary>
     /// Abstract value class that stores the type of the value.
     /// </summary>
     public abstract class Value
     {
-        public ValueType Type;
+        public readonly TokenType Type;
+        public readonly string Content;
 
-        protected Value(ValueType type)
+        protected Value(TokenType type)
         {
             Type = type;
+        }
+        
+        protected Value(TokenType type, string content)
+        {
+            Type = type;
+            Content = content;
         }
     }
 
@@ -48,15 +47,12 @@ namespace Compiler
     /// </summary>
     public class IntegerValue : Value
     {
-        public string Content;
-
         /// <summary>
         /// Inherited constructor, and the content of the value.
         /// </summary>
         /// <param name="content"> Value content. </param>
-        public IntegerValue(string content) : base(ValueType.Integer)
+        public IntegerValue(string content) : base(TokenType.Integer, content)
         {
-            Content = content;
         }
     }
     
@@ -65,21 +61,104 @@ namespace Compiler
     /// </summary>
     public class StringValue : Value
     {
-        public string Content;
-
         /// <summary>
         /// Inherited constructor, and the content of the value.
         /// </summary>
         /// <param name="content"> Value content. </param>
-        public StringValue(string content) : base(ValueType.String)
+        public StringValue(string content) : base(TokenType.String, content)
         {
-            Content = content;
         }
         
         static void Main()
         {
-            ValueType x = ValueType.Integer;
-            Console.Out.WriteLine((TokenType)x);
+            Console.Out.WriteLine("");
         }
+    }
+    
+    /// <summary>
+    /// Value class for the storage of floats.
+    /// </summary>
+    public class DoubleValue : Value
+    {
+        /// <summary>
+        /// Inherited constructor, and the content of the value.
+        /// </summary>
+        /// <param name="content"> Value content. </param>
+        public DoubleValue(string content) : base(TokenType.Double, content)
+        {
+        }
+    }
+
+    public class Parameter
+    {
+        public readonly Token VariableType;
+        public readonly string VariableName;
+        
+        public Parameter(Token variableType, string variableName)
+        {
+            VariableName = variableName;
+            VariableType = variableType;
+        }
+        
+        public override string ToString()
+        {
+            return VariableType.Content + VariableName;
+        }
+    }
+    
+    public class Function : Value
+    {
+        public readonly List<Parameter> Parameters;
+        public Dictionary<String, Value> VariableTable = new Dictionary<string, Value>();
+
+        public Function(TokenType returnValue, List<Parameter> parameters) : base(returnValue)
+        {
+            Parameters = parameters;
+
+            foreach (var i in Parameters)
+            {
+                Value parameterValue;
+                switch (i.VariableType.Type)
+                {
+                    case TokenType.Bench:
+                    {
+                        parameterValue = new IntegerValue("");
+                        break;
+                    }
+                    case TokenType.Squat:
+                    {
+                        parameterValue = new StringValue("");
+                        break;
+                    }
+                    case TokenType.DeadLift:
+                    {
+                        parameterValue = new DoubleValue("");
+                        break;
+                    }
+                    default:
+                    {
+                        throw new Exception("Unrecognised variable type.");
+                    }
+                }
+                
+                VariableTable.Add(i.VariableName, parameterValue);
+            }
+        }
+
+        public override string ToString()
+        {
+            string output = "";
+            
+            foreach (var i in Parameters)
+            {
+                output += i + ", ";
+            }
+
+            output = output.Remove(output.Length - 2);
+            output += ")";
+            
+            return output;
+        }
+
     }
 }

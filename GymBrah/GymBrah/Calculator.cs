@@ -1,19 +1,18 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
- * Files :          Assignment.cs, Boolean.cs, Calculator.cs, GymBrah.cs, Program.cs, Repetition.cs, Selection.cs,
- *                  Statement.cs 
+ * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
+ *                  Return.cs, Selection.cs, Statement.cs
  * Last Modified :  10/12/21
  * Version :        1.4
  * Description :    Calculator parse tree that parses mathematical expressions. Returns a parse tree of of either
- *                  integer nodes that when evaluated return a single integer output of the evaluated expression, or
- *                  string nodes which when evaluated return the entire expression in string form.
+ *                  integer/double nodes that when evaluated return a single integer/double output of the evaluated
+ *                  expression, or string nodes which when evaluated return the entire expression in string form.
  */
 
 using System;
 using System.Collections.Generic;
 using Compiler;
 using Tokenizer;
-using ValueType = Compiler.ValueType;
 
 namespace GymBrah
 {
@@ -24,16 +23,17 @@ namespace GymBrah
     public class Calculator : Parse
     {
         // Boolean for either return of string of expression or compilation of expression
-        private readonly bool _parseMaths; 
+        private bool _parseMaths; 
 
         /// <summary>
         /// Inherited constructor and a boolean for either the string or integer evaluation.
         /// </summary>
         /// <param name="tokens"></param>
         /// <param name="variableTable"></param>
+        /// <param name="functionTable"></param>
         /// <param name="parseMaths"> Boolean for type of evaluation. </param>
-        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, bool parseMaths = true) : 
-            base(tokens, ref variableTable)
+        public Calculator(List<Token> tokens, ref Dictionary<String, Value> variableTable, ref Dictionary<String, Function> functionTable, bool parseMaths = true) : 
+            base(tokens, ref variableTable, ref functionTable)
         {
             _parseMaths = parseMaths;
         }
@@ -53,6 +53,7 @@ namespace GymBrah
                     if (_parseMaths) return new NegateNode(_parseFactor());
                     return new NegateNodeString(_parseFactor());
                 }
+                case TokenType.Double:
                 case TokenType.Integer:
                 {
                     return new TerminalNode(ScanToken());
@@ -64,14 +65,22 @@ namespace GymBrah
                     // Check identifier exists
                     if (VariableTable.TryGetValue(idToken.Content, out Value result))
                     {
-                        if (result.Type == ValueType.Integer)
+                        if (result.Content == "function") _parseMaths = false;
+                        
+                        if (result.Type == TokenType.Integer)
                         {
                             // Check that variable is of the right type
                             if (_parseMaths) return new TerminalNode(new Token(TokenType.Id, ((IntegerValue)result).Content));
                             return new TerminalNode(idToken);
                         }
+                        if (result.Type == TokenType.Double)
+                        {
+                            // Check that variable is of the right type
+                            if (_parseMaths) return new TerminalNode(new Token(TokenType.Id, ((DoubleValue)result).Content));
+                            return new TerminalNode(idToken);
+                        }
 
-                        throw new Exception("Variable is not an integer.");
+                        throw new Exception("Variable is not an integer or double.");
                     }
 
                     throw new Exception("Variable is not defined.");

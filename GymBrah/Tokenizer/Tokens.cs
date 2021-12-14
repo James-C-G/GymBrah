@@ -18,32 +18,38 @@ namespace Tokenizer
     /// </summary>
     public enum TokenType
     {
-        Illegal,    // Illegal character
-        EoL,        // End of line
+        Illegal,        // Illegal character
+        EoL,            // End of line
 
-        Bench,      // int
-        Squat,      // string
-        DeadLift,   // Bool
-        Can,        // =
+        Bench,          // int
+        Squat,          // string
+        DeadLift,       // double
+        Can,            // =
         
-        Plates,     // ( var * 40) + 20 
+        Plates,         // ( var * 40) + 20
+        Workout,        // Function definition
         
-        Scream,     // Printf("")
-        Is,         // If
-        DropSet,    // While
+        Scream,         // Printf("")
+        Is,             // If
+        DropSet,        // While
+        Gain,           // return
         
         OpenBracket,    // (    
         CloseBracket,   // )
         LightWeight,    // {
         Baby,           // }
-        Id,
+        Id,             // Identifier
 
-        Integer,
-        String,         
+        Integer,        // integer
+        String,         // string
+        Double,         // double
+        
         Equals,         // =
         LessThan,       // <
         GreaterThan,    // >
         Not,            // !
+        
+        Comma,          // ,
         
         Addition,       // +
         Subtraction,    // -    
@@ -62,13 +68,15 @@ namespace Tokenizer
             {"can", TokenType.Can},
             {"bench", TokenType.Bench},
             {"squat", TokenType.Squat},
-            {"deadlift", TokenType.DeadLift},
             {"plates", TokenType.Plates},
             {"scream", TokenType.Scream},
             {"lightweight", TokenType.LightWeight},
             {"baby", TokenType.Baby},
             {"is", TokenType.Is},
-            {"dropset", TokenType.DropSet}
+            {"dropset", TokenType.DropSet},
+            {"deadlift", TokenType.DeadLift},
+            {"workout", TokenType.Workout},
+            {"gain", TokenType.Gain}
         };
     }
 
