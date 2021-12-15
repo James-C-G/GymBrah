@@ -11,10 +11,10 @@
 6. [Status](#status)
 
 ## General Info
-An esoteric programming language (esolang) is a programming language is 
-a programming language designed to try new and interesting programming
+An esoteric programming language (esolang) is a programming language
+designed to try new and interesting programming
 techniques without having to build a fully fledged compiler. We have 
-created our esolang using C# by converting our code into C. We have 
+created our esolang using C# by converting our esolang code into C. We have 
 implemented a gym colloquialism based language to test and learn about
 the theory of programming language grammar.
 
@@ -23,7 +23,7 @@ terms and "brah" being a common colloquialism and greeting - coming from
 an abbreviation of "bro" being an abbreviation of "brother".
 
 In this project a simple IDE was implemented using C# to allow users to 
-write and compile our code easily, however, the base compiler using 
+write and compile our code easily, however, the base compiler uses 
 command line arguments to parse our esolang code into C to then be
 compiled using the GCC.
 
@@ -32,15 +32,15 @@ compiled using the GCC.
 * [Rider](https://www.jetbrains.com/rider/) - JetBrains Rider IDE
 
 ## Features
-* Basic mathematical operations
+* Compiling basic mathematical operations
 * Basic selection and repetition
-* Assignment of basic data types
+* Compilation of assignment using basic data types
 * Function definitions and calls
-* Basic output
+* Compilation of basic output
 * Parsing of our esolang into valid C code
 * Compilation of C code through GCC
-* Command line argument to pass text file for parsing
-* Command line argument to pass C file for compilation
+* Command line argument to pass a text file for parsing
+* Command line argument to pass a C file for compilation
 
 ## Getting Started
 These instructions will get you a copy of the project up and running
