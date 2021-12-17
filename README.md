@@ -75,8 +75,9 @@ executable files, as seen below:
 `../IDE/publish/GymBrah.exe`
 
 ### Pre-requisites
-We used the MinGW GCC, although others should work the same provided
-they are added to your PATH variable.
+Users must install .NET 5 to run our program which can be gotten through
+either Rider or VisualStudio 2022. Additionally, we used the MinGW GCC, 
+although others should work the same provided they are added to your PATH variable. 
 
 * [.Net SDK 5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)
 * [.Net 5](https://dotnet.microsoft.com/en-us/download/dotnet/5.0)
