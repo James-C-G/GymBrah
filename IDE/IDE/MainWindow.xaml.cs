@@ -1,7 +1,7 @@
 ﻿/*
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          MainWindow.xaml.cs, MainWindow.xaml, App.xaml.cs, App.xaml 
- * Last Modified :  14/12/21
+ * Last Modified :  17/12/21
  * Version :        1.4
  * Description :    Entry class for the running of the IDE for our esolang. Allowing a user to enter code which can then
  *                  be parsed into C code, which can then be compiled and outputted to the user.
@@ -32,6 +32,12 @@ namespace IDE
             Compile.Click += Compile_OnClick;
             Parse.Click += Parse_OnClick;
             Clear.Click += Clear_OnClick;
+            
+            // Initialise buttons
+            Parse.Visibility = Visibility.Visible;
+            Compile.Visibility = Visibility.Hidden;
+            Clear.Visibility = Visibility.Visible;
+            
             
             // Set title, background colours, and font colours
             Title = "GymBrah IDE";
@@ -86,8 +92,6 @@ namespace IDE
         {
             // Clear output, and change button visibility
             OutputTerminal.Text = "";
-            Compile.Visibility = Visibility.Visible;
-            Clear.Visibility = Visibility.Hidden;
         }
         
         /// <summary>
@@ -133,16 +137,17 @@ namespace IDE
             if (OutputTerminal.Text.Split("\n").Last().Contains("Error")) // Error in parsing
             {
                 MessageBox.Show("Error in code, cannot compile.");
+                
             }
             else
             {
                 // Compile c code
                 OutputTerminal.Text = _run("output.c");
-                
-                // Change button visibility
-                Compile.Visibility = Visibility.Hidden;
-                Clear.Visibility = Visibility.Visible;
             }
+            
+            // Change button visibility
+            Compile.Visibility = Visibility.Hidden;
+            Clear.Visibility = Visibility.Visible;
         }
     }
 }
