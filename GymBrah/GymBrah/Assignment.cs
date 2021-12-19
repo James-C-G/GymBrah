@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Return.cs, Selection.cs, Statement.cs  
- * Last Modified :  13/12/21
+ * Last Modified :  19/12/21
  * Version :        1.4
  * Description :    Assignment parse tree that parses assignment expressions for string, integers, and doubles.
  */
@@ -138,6 +138,14 @@ namespace GymBrah
         {
             switch (CurrentToken.Type)
             {
+                case TokenType.OpenBracket: // Maths tokens
+                case TokenType.Negate:
+                {
+                    if (_assignmentType == TokenType.Integer) goto case TokenType.Integer;
+                    if (_assignmentType == TokenType.Double) goto case TokenType.Double;
+                    
+                    throw new Exception("Unrecognised assignment.");
+                }
                 case TokenType.Id: // If being assigned to an identifier e.g. int x = y;
                 {
                     if (VariableTable.TryGetValue(CurrentToken.Content, out Value result)) // Ensure variable exists
@@ -145,9 +153,6 @@ namespace GymBrah
                         // Ensure variable is of the same type as the assignment type e.g. int x = "";
                         if (result.Type != _assignmentType) 
                         {
-                            // Edge case for double assignment with integers e.g. double x = 1;
-                            if (_assignmentType == TokenType.Double && result.Type == TokenType.Integer) goto case TokenType.Double;
-                            
                             throw new Exception("Variables are not of the same type.");
                         }
                         if (result.Type == TokenType.Integer) // Handle integers
@@ -234,6 +239,13 @@ namespace GymBrah
                 }
                 case TokenType.Double: // Calculate expression
                 {
+                    if (_assignmentType != CurrentToken.Type && CurrentToken.Type != TokenType.Id 
+                                                             && CurrentToken.Type != TokenType.Negate 
+                                                             && CurrentToken.Type != TokenType.OpenBracket)
+                    {
+                        throw new Exception("Incorrect double assignment type.");
+                    }
+                    
                     List<Token> calcTokens = GetRemainingTokens(); // Get tokens for calculation
                     
                     // Put brackets around entire expression
@@ -253,7 +265,37 @@ namespace GymBrah
                 }
                 case TokenType.Integer:
                 {
+                    if (_assignmentType != CurrentToken.Type && CurrentToken.Type != TokenType.Id 
+                                                             && CurrentToken.Type != TokenType.Negate 
+                                                             && CurrentToken.Type != TokenType.OpenBracket)
+                    {
+                        throw new Exception("Incorrect integer assignment type.");
+                    }
+
                     List<Token> calcTokens = GetRemainingTokens(); // Get tokens for calculation
+
+                    // If being interpreted, ensure no doubles are present in integer
+                    if (!_evaluate)
+                    {
+                        foreach (var i in calcTokens)
+                        {
+                            if (i.Type == TokenType.Double)
+                            {
+                                throw new Exception("Cannot have double in integer maths.");
+                            }
+
+                            if (i.Type == TokenType.Id)
+                            {
+                                if (VariableTable.TryGetValue(i.Content, out Value result))
+                                {
+                                    if (result.Type == TokenType.Double)
+                                    {
+                                        throw new Exception("Cannot have double in integer maths.");
+                                    }
+                                }
+                            }
+                        }
+                    }
                     
                     // Put brackets around entire expression
                     calcTokens.Insert(0, new Token(TokenType.OpenBracket, "("));
@@ -261,6 +303,8 @@ namespace GymBrah
 
                     string calculation = new Calculator(calcTokens, ref VariableTable, ref FunctionTable, _evaluate).ParseTree().Evaluate();
 
+                    if (calculation.Contains(".")) throw new Exception("Cannot assign a double to an integer.");
+                    
                     if (!VariableTable.TryAdd(_variableName, new IntegerValue(calculation))) 
                         VariableTable[_variableName] = new IntegerValue(calculation);
 
