@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Return.cs, Selection.cs, Statement.cs 
- * Last Modified :  13/12/21
+ * Last Modified :  19/12/21
  * Version :        1.4
  * Description :    Function class that builds parse trees for both function definitions and function calls. Parameters
  *                  are recursively parsed and types are maintained.
@@ -273,8 +273,11 @@ namespace GymBrah
                         throw new Exception("Function definition braces not used properly.");
                     }
 
+                    Token next = ScanToken();
+                    if (next == null) goto default;
+                    
                     // Ensure parameters are comma seperated
-                    if (ScanToken().Type != TokenType.Comma)
+                    if (next.Type != TokenType.Comma)
                     {
                         throw new Exception("Invalid comma separation in parameters.");
                     }

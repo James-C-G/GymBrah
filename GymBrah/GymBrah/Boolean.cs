@@ -2,7 +2,7 @@
  * Author :         Jamie Grant & Pawel Bielinski
  * Files :          Assignment.cs, Boolean.cs, Calculator.cs, Functions.cs GymBrah.cs, Program.cs, Repetition.cs,
  *                  Return.cs, Selection.cs, Statement.cs
- * Last Modified :  10/12/21
+ * Last Modified :  19/12/21
  * Version :        1.4
  * Description :    Boolean parse tree to parse boolean expressions, handling both integer and string comparisons.   
  */
@@ -66,6 +66,9 @@ namespace GymBrah
         private Node _parseB()
         {
             Token start = ScanToken();
+
+            if (start == null) throw new Exception("Invalid boolean expression.");
+            
             Node nodeOne = _parseC(start);
             
             switch (start.Type)
@@ -98,7 +101,7 @@ namespace GymBrah
         {
             List<Token> boolTokens = GetRemainingTokens();
             List<Token> exprTokens = new List<Token>();
-            
+
             foreach (var i in boolTokens)
             {
                 // Read up to boolean comparison tokens
