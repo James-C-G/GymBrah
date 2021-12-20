@@ -215,7 +215,10 @@ namespace GymBrah
             }
 
             // Function has no parameters
-            if (ScanToken().Type == TokenType.CloseBracket)
+            Token current = ScanToken();
+            if (current == null) throw new Exception("Parameters not called correctly.");
+            
+            if (current.Type == TokenType.CloseBracket)
             {
                 if (CurrentToken.Type == TokenType.EoL) // Ensure EoL
                 {
@@ -303,8 +306,11 @@ namespace GymBrah
             
             if (paramType == null) // No parameters
             {
+                Token current = ScanToken();
+                if (current == null) throw new Exception("Parameters not defined correctly.");
+                
                 // Look for end of params and start of braces
-                if (ScanToken().Type == TokenType.CloseBracket)
+                if (current.Type == TokenType.CloseBracket)
                 {
                     // Ensure braces are last token in definition
                     if (CurrentToken.Type == TokenType.LightWeight && ScanToken() == null)
@@ -362,7 +368,10 @@ namespace GymBrah
                     
                     if (FunctionTable.TryGetValue(ScanToken().Content, out Function result)) // Make sure function exists
                     {
-                        if (ScanToken().Type == TokenType.OpenBracket) // Ensure it is called properly
+                        Token current = ScanToken();
+                        if (current == null) throw new Exception("Parameters not called correctly.");
+                        
+                        if (current.Type == TokenType.OpenBracket) // Ensure it is called properly
                         {
                             // Get function call
                             return new FunctionCallNode(functionName, _parseExistingFunction(result)); 
@@ -396,10 +405,13 @@ namespace GymBrah
                         {
                             Token name = ScanToken(); // Function name
                             
-                            if (ScanToken().Type == TokenType.OpenBracket) // Start of function definition
+                            Token current = ScanToken();
+                            if (current == null) throw new Exception("Parameters not defined correctly.");
+                            
+                            if (current.Type == TokenType.OpenBracket) // Start of function definition
                             {
                                 // Get parameters
-                                Node returnNode = new FunctionNode(left,_parseFunctionParameters(), name);
+                                Node returnNode = new FunctionNode(left, _parseFunctionParameters(), name);
 
                                 // Add function to function table
                                 if (FunctionTable.TryAdd(name.Content, new Function(functionType.Type, _parameters)))

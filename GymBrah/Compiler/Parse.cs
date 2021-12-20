@@ -51,8 +51,15 @@ namespace Compiler
         /// <returns> List of remaining tokens. </returns>
         protected List<Token> GetRemainingTokens()
         {
-            List<Token> outPut = _tokens.GetRange(_counter, _tokens.Count - _counter);
-            return outPut;
+            try
+            {
+                List<Token> outPut = _tokens.GetRange(_counter, _tokens.Count - _counter);
+                return outPut;
+            }
+            catch (Exception e)
+            {
+                throw new Exception("Token error.");
+            }
         }
 
         /// <summary>
@@ -61,11 +68,11 @@ namespace Compiler
         /// <returns> Current token. </returns>
         protected Token ScanToken()
         {
-            Token token = _tokens[_counter];  
-            _counter++;
-            
             try
             {
+                Token token = _tokens[_counter];  
+                _counter++;
+                
                 CurrentToken = _tokens[_counter]; 
                 return token;
             }
